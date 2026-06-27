@@ -93,3 +93,8 @@ See the deployment scripts in the scripts directory.
 ## Demo placeholders
 - Demo URL: TBD
 - Demo wallet: TBD
+
+  #screenshots :
+  <img width="1920" height="1080" alt="Screenshot (5)" src="https://github.com/user-attachments/assets/d8e47afa-94f1-457e-ad24-3eef9e9d1a42" />
+  
+
