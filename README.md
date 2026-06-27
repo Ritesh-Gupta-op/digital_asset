@@ -93,6 +93,9 @@ See the deployment scripts in the scripts directory.
 ## Demo placeholders
 - Demo URL: TBD
 - Demo wallet: TBD
+  #Transaction id:faeeb9aee3659ad98259c461f7265c1d8ec0ebc84740083e12b91e5e1c031352
+  Screenshot:
+  <img width="1210" height="349" alt="{3A6D2E24-555D-4FF3-92B6-D93D8527A276}" src="https://github.com/user-attachments/assets/027fa881-e6bc-4556-8714-2dc16b89e427" />
 
   #screenshots :
   <img width="1920" height="1080" alt="Screenshot (5)" src="https://github.com/user-attachments/assets/d8e47afa-94f1-457e-ad24-3eef9e9d1a42" />
