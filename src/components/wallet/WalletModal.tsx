@@ -5,7 +5,7 @@ import React, { useState } from 'react';
 interface WalletModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConnect: (walletType: string) => void;
+  onConnect: (walletType: string) => Promise<void>;
   network: 'testnet' | 'mainnet';
   isConnecting: boolean;
 }
@@ -19,8 +19,21 @@ const wallets = [
 
 export function WalletModal({ isOpen, onClose, onConnect, network, isConnecting }: WalletModalProps) {
   const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   if (!isOpen) return null;
+
+  const handleConnectClick = async (walletId: string) => {
+    try {
+      setError(null);
+      setSelectedWallet(walletId);
+      await onConnect(walletId);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Connection failed';
+      setError(errorMessage);
+      setSelectedWallet(null);
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
@@ -37,6 +50,15 @@ export function WalletModal({ isOpen, onClose, onConnect, network, isConnecting 
           <p className="mt-2 text-sm text-slate-400">Choose a wallet to connect to {network}</p>
         </div>
 
+        {error && (
+          <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/10 p-4">
+            <p className="text-sm text-red-300 mb-3">{error}</p>
+            <p className="text-xs text-red-200">
+              <strong>Need help?</strong> Install <a href="https://www.freighter.app/" target="_blank" rel="noopener noreferrer" className="underline hover:text-red-100">Freighter Wallet</a> extension
+            </p>
+          </div>
+        )}
+
         {isConnecting && selectedWallet ? (
           <div className="space-y-4">
             <div className="rounded-2xl border border-white/10 bg-white/5 p-6 text-center">
@@ -44,7 +66,7 @@ export function WalletModal({ isOpen, onClose, onConnect, network, isConnecting 
                 <div className="h-12 w-12 animate-spin rounded-full border-4 border-brand-600/30 border-t-brand-600" />
               </div>
               <p className="font-medium text-white">Connecting to {wallets.find(w => w.id === selectedWallet)?.name}</p>
-              <p className="mt-2 text-sm text-slate-400">Sign the connection request in your wallet</p>
+              <p className="mt-2 text-sm text-slate-400">Check your wallet extension for a connection request</p>
             </div>
           </div>
         ) : (
@@ -52,11 +74,9 @@ export function WalletModal({ isOpen, onClose, onConnect, network, isConnecting 
             {wallets.map((wallet) => (
               <button
                 key={wallet.id}
-                onClick={() => {
-                  setSelectedWallet(wallet.id);
-                  setTimeout(() => onConnect(wallet.id), 500);
-                }}
-                className="group rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-brand-500/50 hover:bg-brand-500/10"
+                onClick={() => handleConnectClick(wallet.id)}
+                disabled={isConnecting}
+                className="group rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-brand-500/50 hover:bg-brand-500/10 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <div className="text-2xl mb-2">{wallet.icon}</div>
                 <p className="text-sm font-medium text-white">{wallet.name}</p>
@@ -70,7 +90,7 @@ export function WalletModal({ isOpen, onClose, onConnect, network, isConnecting 
             <span className="font-semibold text-white">Network:</span> {network === 'testnet' ? 'Stellar Testnet' : 'Stellar Mainnet'}
           </p>
           <p className="mt-2 text-xs text-slate-400">
-            <span className="font-semibold text-white">Status:</span> No payment required. This is a read-only connection.
+            <span className="font-semibold text-white">Status:</span> Real XLM transactions. You will spend actual XLM from your wallet.
           </p>
         </div>
       </div>

@@ -17,15 +17,16 @@ const nav = [
 export function Shell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [walletModalOpen, setWalletModalOpen] = useState(false);
-  const { connected, address, disconnect, network, setNetwork, status, setStatus, connect } = useWalletStore();
+  const { connected, address, disconnect, network, setNetwork, status, connect } = useWalletStore();
 
-  const handleConnectWallet = (walletType: string) => {
-    setStatus('connecting');
-    setTimeout(() => {
-      connect('GCLY3...5F4A', network);
-      setStatus('connected');
+  const handleConnectWallet = async (walletType: string) => {
+    try {
+      await connect(walletType, network);
       setWalletModalOpen(false);
-    }, 1500);
+    } catch (error) {
+      console.error('Failed to connect wallet:', error);
+      throw error;
+    }
   };
 
   return (
