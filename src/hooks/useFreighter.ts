@@ -7,49 +7,45 @@ export function useFreighter() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check if Freighter is already available
-    if (typeof window !== 'undefined' && window.freighter) {
+    const checkFreighter = () => {
+      // Newer Freighter uses window.freighterApi, older uses window.freighter
+      return (
+        (typeof window !== 'undefined' && !!window.freighter) ||
+        (typeof window !== 'undefined' && !!(window as any).freighterApi)
+      );
+    };
+
+    if (checkFreighter()) {
       setIsAvailable(true);
       setIsLoading(false);
       return;
     }
 
-    // Wait for Freighter to be injected
-    const checkFreighter = () => {
-      if (typeof window !== 'undefined' && window.freighter) {
+    const handleFreighterLoaded = () => {
+      setIsAvailable(true);
+      setIsLoading(false);
+    };
+    window.addEventListener('freighter:loaded', handleFreighterLoaded);
+
+    // Check every 100ms for up to 15 seconds
+    const interval = setInterval(() => {
+      if (checkFreighter()) {
         setIsAvailable(true);
         setIsLoading(false);
+        clearInterval(interval);
+        clearTimeout(timeout);
       }
-    };
+    }, 100);
 
-    // Check immediately
-    checkFreighter();
-
-    // Set up periodic check for first 5 seconds
-    const interval = setInterval(checkFreighter, 100);
     const timeout = setTimeout(() => {
       clearInterval(interval);
       setIsLoading(false);
-    }, 5000);
-
-    // Listen for the freighter:loaded event if available
-    if (typeof window !== 'undefined') {
-      const handleFreighterLoaded = () => {
-        setIsAvailable(true);
-        setIsLoading(false);
-      };
-      window.addEventListener('freighter:loaded', handleFreighterLoaded);
-
-      return () => {
-        clearInterval(interval);
-        clearTimeout(timeout);
-        window.removeEventListener('freighter:loaded', handleFreighterLoaded);
-      };
-    }
+    }, 15000);
 
     return () => {
       clearInterval(interval);
       clearTimeout(timeout);
+      window.removeEventListener('freighter:loaded', handleFreighterLoaded);
     };
   }, []);
 
