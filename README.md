@@ -85,21 +85,17 @@ See the deployment scripts in the scripts directory.
 - Add screenshots in docs/screenshots after running the app locally.
 
 ## Contract addresses
-- Registry: TBD
-- Router: TBD
-- Last tx: TBD
-- Explorer: TBD
-
-## Demo placeholders
-- Demo URL: TBD
-- Demo wallet: TBD
-##Transaction id:faeeb9aee3659ad98259c461f7265c1d8ec0ebc84740083e12b91e5e1c031352
-
-
-  Screenshot:
-  <img width="1210" height="349" alt="{3A6D2E24-555D-4FF3-92B6-D93D8527A276}" src="https://github.com/user-attachments/assets/027fa881-e6bc-4556-8714-2dc16b89e427" />
+Transaction id:78bdb5db5f51ca76340ea3ad0d586da68606709e03ee35e4171aed96feaf4217
+ #Screenshot:
+ <img width="1920" height="1080" alt="Screenshot (203)" src="https://github.com/user-attachments/assets/86e8da5d-5205-4245-aa8b-cc37203ee9f8" />
 
   #screenshots :
+  
+  #1
   <img width="1920" height="1080" alt="Screenshot (5)" src="https://github.com/user-attachments/assets/d8e47afa-94f1-457e-ad24-3eef9e9d1a42" />
+  #2
+  <img width="1920" height="1080" alt="Screenshot (271)" src="https://github.com/user-attachments/assets/87eefdd6-2453-4fc9-8a7a-2c33e65fd85f" />
+
+  
   
 
