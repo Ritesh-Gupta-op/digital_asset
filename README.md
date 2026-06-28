@@ -6,6 +6,9 @@ Stellar License OS is a digital asset licensing platform for creators and busine
 ## Problem statement
 Creators often rely on fragmented licensing tools, manual royalty tracking, and opaque approval flows. Stellar License OS consolidates licensing, wallet interactions, activity tracking, and transaction monitoring into a production-style operating layer on Stellar.
 
+##Deployed_link:
+  [vercel](https://digital-asset-xrme-ng6fhl9ou-zeroschenieders-projects.vercel.app)
+
 ## Architecture diagram
 ```mermaid
 flowchart LR
