@@ -66,7 +66,7 @@ export async function sendXLMPayment(
     const signedXDR = await walletStore.signTransaction(transactionXDR);
 
     // Reconstruct transaction from signed XDR
-    const signedTx = new Transaction(signedXDR, networkPassphrase);
+    const signedTx = TransactionBuilder.fromXDR(signedXDR, networkPassphrase);
 
     // Submit transaction
     const result = await server.submitTransaction(signedTx);

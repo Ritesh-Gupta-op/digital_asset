@@ -1,8 +1,16 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import {
+  StellarWalletsKit,
+  WalletNetwork,
+  FreighterModule,
+  LobstrModule,
+  AlbedoModule,
+} from '@creit.tech/stellar-wallets-kit';
 
 interface WalletState {
   address: string | null;
+  walletType: string | null;
   network: 'testnet' | 'mainnet';
   connected: boolean;
   status: 'idle' | 'connecting' | 'connected';
@@ -13,49 +21,18 @@ interface WalletState {
   signTransaction: (txXdr: string) => Promise<string>;
 }
 
-// Supports both window.freighter (older) and window.freighterApi (newer extension)
-function getFreighterApi() {
-  if (typeof window === 'undefined') return null;
-  return window.freighter || (window as any).freighterApi || null;
+function getWalletNetwork(network: 'testnet' | 'mainnet') {
+  return network === 'mainnet' ? WalletNetwork.PUBLIC : WalletNetwork.TESTNET;
 }
 
-function waitForFreighter(maxWait: number = 15000): Promise<NonNullable<ReturnType<typeof getFreighterApi>>> {
-  return new Promise((resolve, reject) => {
-    const api = getFreighterApi();
-    if (api) {
-      resolve(api);
-      return;
-    }
+function createWalletKit(network: 'testnet' | 'mainnet') {
+  if (typeof window === 'undefined') {
+    return null;
+  }
 
-    const handleFreighterLoaded = () => {
-      window.removeEventListener('freighter:loaded', handleFreighterLoaded);
-      clearTimeout(timeout);
-      const loaded = getFreighterApi();
-      if (loaded) resolve(loaded);
-      else reject(new Error('Freighter loaded event fired but API not found.'));
-    };
-
-    window.addEventListener('freighter:loaded', handleFreighterLoaded);
-
-    const startTime = Date.now();
-    const interval = setInterval(() => {
-      const api = getFreighterApi();
-      if (api) {
-        clearInterval(interval);
-        clearTimeout(timeout);
-        window.removeEventListener('freighter:loaded', handleFreighterLoaded);
-        resolve(api);
-      }
-      if (Date.now() - startTime > maxWait) {
-        clearInterval(interval);
-      }
-    }, 100);
-
-    const timeout = setTimeout(() => {
-      clearInterval(interval);
-      window.removeEventListener('freighter:loaded', handleFreighterLoaded);
-      reject(new Error('Freighter wallet failed to load. Please install the Freighter extension.'));
-    }, maxWait);
+  return new StellarWalletsKit({
+    network: getWalletNetwork(network),
+    modules: [new FreighterModule(), new LobstrModule(), new AlbedoModule()],
   });
 }
 
@@ -63,6 +40,7 @@ export const useWalletStore = create<WalletState>()(
   persist(
     (set, get) => ({
       address: null,
+      walletType: null,
       network: 'testnet',
       connected: false,
       status: 'idle',
@@ -71,19 +49,17 @@ export const useWalletStore = create<WalletState>()(
         try {
           set({ status: 'connecting' });
 
-          const freighter = await waitForFreighter(15000);
-
-          // Request access if not already allowed
-          const isAllowed = await freighter.isAllowed();
-          if (!isAllowed) {
-            await freighter.requestAccess();
+          const kit = createWalletKit(network);
+          if (!kit) {
+            throw new Error('Wallet connection is only available in the browser.');
           }
 
-          // Get user's public key
-          const address = await freighter.getPublicKey();
+          await kit.setWallet(walletType);
+          const { address } = await kit.getAddress();
 
           set({
             address,
+            walletType,
             connected: true,
             network,
             status: 'connected',
@@ -97,18 +73,30 @@ export const useWalletStore = create<WalletState>()(
       },
 
       signTransaction: async (txXdr: string) => {
-        const freighter = await waitForFreighter();
-        const signedXdr = await freighter.signTransaction(txXdr);
-        return signedXdr;
+        const walletStore = get();
+        const kit = createWalletKit(walletStore.network);
+        if (!kit) {
+          throw new Error('Wallet signing is only available in the browser.');
+        }
+
+        await kit.setWallet(walletStore.walletType ?? 'freighter');
+        const { signedTxXdr } = await kit.signTransaction(txXdr, {
+          address: walletStore.address ?? undefined,
+          networkPassphrase: walletStore.network === 'mainnet'
+            ? 'Public Global Stellar Network ; September 2015'
+            : 'Test SDF Network ; September 2015',
+        });
+
+        return signedTxXdr;
       },
 
       disconnect: () => {
-        set({ address: null, connected: false, status: 'idle' });
+        set({ address: null, walletType: null, connected: false, status: 'idle' });
       },
 
       setNetwork: (network) => set({ network }),
       setStatus: (status) => set({ status }),
     }),
-    { name: 'wallet-store', partialize: (state) => ({ address: state.address, network: state.network }) },
+    { name: 'wallet-store', partialize: (state) => ({ address: state.address, walletType: state.walletType, network: state.network }) },
   ),
 );;
