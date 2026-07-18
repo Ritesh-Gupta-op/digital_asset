@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useWalletStore } from '@/store/wallet';
+import { useTheme } from '@/components/ThemeProvider';
 import { WalletModal } from '@/components/wallet/WalletModal';
 
 const nav = [
@@ -17,22 +18,8 @@ const nav = [
 export function Shell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [walletModalOpen, setWalletModalOpen] = useState(false);
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const { theme, toggleTheme } = useTheme();
   const { connected, address, disconnect, network, setNetwork, status, connect } = useWalletStore();
-
-  useEffect(() => {
-    const saved = window.localStorage.getItem('theme');
-    const initialTheme = saved === 'light' ? 'light' : 'dark';
-    setTheme(initialTheme);
-    document.documentElement.classList.toggle('dark', initialTheme === 'dark');
-    document.documentElement.classList.toggle('light', initialTheme === 'light');
-  }, []);
-
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', theme === 'dark');
-    document.documentElement.classList.toggle('light', theme === 'light');
-    window.localStorage.setItem('theme', theme);
-  }, [theme]);
 
   const handleConnectWallet = async (walletType: string) => {
     try {
@@ -100,10 +87,21 @@ export function Shell({ children }: { children: React.ReactNode }) {
               </div>
 
               <button
-                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                className="hidden rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-slate-200 transition hover:bg-white/10 sm:inline-flex"
+                onClick={toggleTheme}
+                className="hidden rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-slate-200 transition hover:bg-white/10 hover:border-white/20 sm:inline-flex items-center gap-2 active:scale-[0.95]"
+                title="Toggle theme"
               >
-                {theme === 'dark' ? 'Light mode' : 'Dark mode'}
+                {theme === 'dark' ? (
+                  <>
+                    <span>☀️</span>
+                    <span>Light</span>
+                  </>
+                ) : (
+                  <>
+                    <span>🌙</span>
+                    <span>Dark</span>
+                  </>
+                )}
               </button>
 
               {connected ? (

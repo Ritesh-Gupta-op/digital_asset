@@ -1,36 +1,21 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useTheme } from '@/components/ThemeProvider';
 
 export default function HomePage() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const pageTheme = isDarkMode ? 'bg-slate-950 text-slate-50' : 'bg-slate-50 text-slate-950';
-  const cardTheme = isDarkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200';
-  const chipTheme = isDarkMode ? 'bg-slate-800 text-slate-200' : 'bg-slate-100 text-slate-700';
-
-  useEffect(() => {
-    const savedTheme = window.localStorage.getItem('theme');
-    const initialIsDark = savedTheme === 'light' ? false : true;
-    setIsDarkMode(initialIsDark);
-    document.documentElement.classList.toggle('dark', initialIsDark);
-    document.documentElement.classList.toggle('light', !initialIsDark);
-  }, []);
-
-  const handleThemeToggle = () => {
-    const nextTheme = !isDarkMode;
-    setIsDarkMode(nextTheme);
-    window.localStorage.setItem('theme', nextTheme ? 'dark' : 'light');
-    document.documentElement.classList.toggle('dark', nextTheme);
-    document.documentElement.classList.toggle('light', !nextTheme);
-  };
+  const { theme, toggleTheme } = useTheme();
+  const isDarkMode = theme === 'dark';
 
   return (
-    <main className={`min-h-screen transition-colors duration-500 ease-out ${pageTheme}`}>
+    <main className={`min-h-screen transition-colors duration-500 ease-out ${isDarkMode ? 'bg-slate-950 text-slate-50' : 'bg-slate-50 text-slate-950'}`}>
       <div className="mx-auto flex max-w-7xl flex-col gap-8 px-6 py-8 sm:px-8 lg:px-10">
         <header className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
           <div className="flex items-center gap-3">
-            <div className={`flex h-10 w-10 items-center justify-center rounded-2xl shadow-md ${isDarkMode ? 'bg-slate-200 text-slate-950' : 'bg-slate-950 text-white'}`}>
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl shadow-md" style={{
+              backgroundColor: isDarkMode ? '#e2e8f0' : '#0f172a',
+              color: isDarkMode ? '#0f172a' : '#ffffff'
+            }}>
               <span className="text-lg font-bold">L</span>
             </div>
             <div>
@@ -42,10 +27,20 @@ export default function HomePage() {
           <div className="flex flex-wrap items-center gap-3">
             <button
               type="button"
-              onClick={() => setIsDarkMode((prev) => !prev)}
-              className="rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-950 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 hover:dark:bg-slate-800"
+              onClick={toggleTheme}
+              className="rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-950 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 hover:dark:bg-slate-800 active:scale-[0.95] inline-flex items-center gap-2"
             >
-              {isDarkMode ? 'Light mode' : 'Dark mode'}
+              {isDarkMode ? (
+                <>
+                  <span>☀️</span>
+                  <span>Light</span>
+                </>
+              ) : (
+                <>
+                  <span>🌙</span>
+                  <span>Dark</span>
+                </>
+              )}
             </button>
 
             <Link
@@ -59,7 +54,7 @@ export default function HomePage() {
 
         <section className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
           <div className="max-w-2xl space-y-8">
-            <div className={`inline-flex rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] ${chipTheme}`}>
+            <div className={`inline-flex rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.35em] ${isDarkMode ? 'bg-slate-800 text-slate-200' : 'bg-slate-100 text-slate-700'}`}>
               Built on Stellar
             </div>
 
@@ -88,7 +83,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className={`rounded-[32px] border p-8 shadow-[0_25px_80px_-40px_rgba(15,23,42,0.15)] transition duration-500 ease-out hover:-translate-y-2 hover:shadow-[0_35px_90px_-45px_rgba(15,23,42,0.2)] ${cardTheme}`}>
+          <div className={`rounded-[32px] border p-8 shadow-[0_25px_80px_-40px_rgba(15,23,42,0.15)] transition duration-500 ease-out hover:-translate-y-2 hover:shadow-[0_35px_90px_-45px_rgba(15,23,42,0.2)] ${isDarkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-200'}`}>
             <div className="flex items-center justify-between gap-4">
               <div>
                 <p className={`text-sm uppercase tracking-[0.3em] ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Balance</p>
