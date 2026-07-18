@@ -1,7 +1,7 @@
 # LicenseCraft
 
 ## Product overview
-Your one-click digital license generator for NFTs, smart contracts, and tokens.
+Your one-click digital Asset license generator for NFTs, smart contracts, and tokens.A digital asset licence generator in Web3 is a specialized tool or protocol that converts intellectual property (IP), software rights, or digital media into programmable, on-chain legal frameworks.
 
 ## Problem statement
 Creators often rely on fragmented licensing tools, manual royalty tracking, and opaque approval flows. LicenseCraft consolidates licensing, wallet interactions, activity tracking, and transaction monitoring into a production-style operating layer on Stellar.
