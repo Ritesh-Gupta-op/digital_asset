@@ -1,10 +1,10 @@
-# Stellar License OS
+# LicenseCraft
 
 ## Product overview
-Stellar License OS is a digital asset licensing platform for creators and businesses that want to monetize, protect, and distribute intellectual property and digital tokens with transparent on-chain workflows.
+Your one-click digital license generator for NFTs, smart contracts, and tokens.
 
 ## Problem statement
-Creators often rely on fragmented licensing tools, manual royalty tracking, and opaque approval flows. Stellar License OS consolidates licensing, wallet interactions, activity tracking, and transaction monitoring into a production-style operating layer on Stellar.
+Creators often rely on fragmented licensing tools, manual royalty tracking, and opaque approval flows. LicenseCraft consolidates licensing, wallet interactions, activity tracking, and transaction monitoring into a production-style operating layer on Stellar.
 
 ## Architecture diagram
 ```mermaid

@@ -1,12 +1,5 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import {
-  StellarWalletsKit,
-  WalletNetwork,
-  FreighterModule,
-  LobstrModule,
-  AlbedoModule,
-} from '@creit.tech/stellar-wallets-kit';
 
 interface WalletState {
   address: string | null;
@@ -22,16 +15,21 @@ interface WalletState {
 }
 
 function getWalletNetwork(network: 'testnet' | 'mainnet') {
-  return network === 'mainnet' ? WalletNetwork.PUBLIC : WalletNetwork.TESTNET;
+  return network === 'mainnet'
+    ? 'Public Global Stellar Network ; September 2015'
+    : 'Test SDF Network ; September 2015';
 }
 
-function createWalletKit(network: 'testnet' | 'mainnet') {
+async function createWalletKit(network: 'testnet' | 'mainnet') {
   if (typeof window === 'undefined') {
     return null;
   }
 
+  const kitModule = await import('@creit.tech/stellar-wallets-kit');
+  const { StellarWalletsKit, WalletNetwork, FreighterModule, LobstrModule, AlbedoModule } = kitModule;
+
   return new StellarWalletsKit({
-    network: getWalletNetwork(network),
+    network: network === 'mainnet' ? WalletNetwork.PUBLIC : WalletNetwork.TESTNET,
     modules: [new FreighterModule(), new LobstrModule(), new AlbedoModule()],
   });
 }
@@ -49,7 +47,7 @@ export const useWalletStore = create<WalletState>()(
         try {
           set({ status: 'connecting' });
 
-          const kit = createWalletKit(network);
+          const kit = await createWalletKit(network);
           if (!kit) {
             throw new Error('Wallet connection is only available in the browser.');
           }
@@ -74,7 +72,7 @@ export const useWalletStore = create<WalletState>()(
 
       signTransaction: async (txXdr: string) => {
         const walletStore = get();
-        const kit = createWalletKit(walletStore.network);
+        const kit = await createWalletKit(walletStore.network);
         if (!kit) {
           throw new Error('Wallet signing is only available in the browser.');
         }

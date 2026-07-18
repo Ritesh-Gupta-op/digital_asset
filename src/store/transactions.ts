@@ -15,15 +15,7 @@ interface TransactionState {
 }
 
 export const useTransactionStore = create<TransactionState>((set) => ({
-  items: [
-    {
-      id: 'tx-1',
-      status: 'confirmed',
-      hash: 'abc123',
-      explorerUrl: 'https://stellar.expert/explorer/testnet/tx/abc123',
-      description: 'Created a new license draft',
-    },
-  ],
+  items: [],
   add: (item) => set((state) => ({ items: [item, ...state.items] })),
   update: (id, updates) => set((state) => ({ items: state.items.map((item) => (item.id === id ? { ...item, ...updates } : item)) })),
 }));

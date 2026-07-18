@@ -2,7 +2,7 @@ import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const sendXLMPaymentMock = vi.hoisted(() => vi.fn());
+const submitLicenseDraftMock = vi.hoisted(() => vi.fn());
 
 vi.mock('@creit.tech/stellar-wallets-kit', () => ({
   StellarWalletsKit: class {
@@ -20,7 +20,7 @@ vi.mock('@creit.tech/stellar-wallets-kit', () => ({
 }));
 
 vi.mock('@/services/contract', () => ({
-  sendXLMPayment: sendXLMPaymentMock,
+  submitLicenseDraft: submitLicenseDraftMock,
 }));
 
 import TransactionsPage from './page';
@@ -35,22 +35,26 @@ describe('TransactionsPage', () => {
       connected: true,
       status: 'connected',
     });
-    sendXLMPaymentMock.mockReset();
-    sendXLMPaymentMock.mockResolvedValue({ hash: 'abc123' });
+    submitLicenseDraftMock.mockReset();
+    submitLicenseDraftMock.mockResolvedValue({ hash: 'abc123' });
   });
 
-  it('submits a real payment when the user triggers the transaction action', async () => {
+  it('submits a license purchase when the user triggers the transaction action', async () => {
     render(<TransactionsPage />);
 
-    fireEvent.change(screen.getByLabelText(/recipient address/i), {
+    fireEvent.change(screen.getByLabelText(/issuer wallet address/i), {
       target: { value: 'GBTESTADDRESS' },
     });
     fireEvent.change(screen.getByLabelText(/amount/i), {
       target: { value: '0.0001' },
     });
 
-    fireEvent.click(screen.getByRole('button', { name: /send test payment/i }));
+    fireEvent.click(screen.getByRole('button', { name: /purchase license/i }));
 
-    expect(sendXLMPaymentMock).toHaveBeenCalledWith('GBTESTADDRESS', '0.0001', expect.any(String));
+    expect(submitLicenseDraftMock).toHaveBeenCalledWith(
+      expect.objectContaining({ title: expect.any(String), terms: expect.any(String) }),
+      'GBTESTADDRESS',
+      '0.0001',
+    );
   });
 });

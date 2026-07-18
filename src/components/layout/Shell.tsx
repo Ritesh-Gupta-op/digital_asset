@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useWalletStore } from '@/store/wallet';
@@ -17,7 +17,22 @@ const nav = [
 export function Shell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [walletModalOpen, setWalletModalOpen] = useState(false);
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const { connected, address, disconnect, network, setNetwork, status, connect } = useWalletStore();
+
+  useEffect(() => {
+    const saved = window.localStorage.getItem('theme');
+    const initialTheme = saved === 'light' ? 'light' : 'dark';
+    setTheme(initialTheme);
+    document.documentElement.classList.toggle('dark', initialTheme === 'dark');
+    document.documentElement.classList.toggle('light', initialTheme === 'light');
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+    document.documentElement.classList.toggle('light', theme === 'light');
+    window.localStorage.setItem('theme', theme);
+  }, [theme]);
 
   const handleConnectWallet = async (walletType: string) => {
     try {
@@ -31,27 +46,27 @@ export function Shell({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <div className="min-h-screen bg-[linear-gradient(135deg,_#020617_0%,_#111827_50%,_#0a0f1a_100%)] text-slate-100">
-        <header className="sticky top-0 z-40 border-b border-white/5 bg-slate-950/70 backdrop-blur-2xl">
-          <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6 py-5 lg:px-8">
-            <div className="flex items-center gap-2">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-brand-600 to-orange-600">
-                <span className="text-lg font-bold text-white">🌟</span>
+      <div className="min-h-screen bg-slate-950 text-slate-100">
+        <header className="sticky top-0 z-40 border-b border-white/10 bg-slate-950/80 backdrop-blur-xl">
+          <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6 py-4 lg:px-8">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-500 to-sky-500 shadow-glow">
+                <span className="text-lg font-bold text-white">L</span>
               </div>
               <div>
-                <p className="text-sm font-bold uppercase tracking-[0.4em] text-white">Stellar</p>
-                <p className="text-xs text-slate-500">License OS</p>
+                <p className="text-sm font-bold uppercase tracking-[0.4em] text-white">LicenseCraft</p>
+                <p className="text-xs text-slate-400">License OS</p>
               </div>
             </div>
 
-            <nav className="hidden gap-1 rounded-full border border-white/5 bg-white/5 p-1 md:flex">
+            <nav className="hidden items-center gap-1 rounded-full border border-white/10 bg-slate-900/70 p-1 md:flex">
               {nav.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
                   className={`rounded-full px-4 py-2 text-sm font-medium transition ${
                     pathname === item.href
-                      ? 'bg-gradient-to-r from-brand-600 to-orange-600 text-white shadow-lg shadow-brand-600/30'
+                      ? 'bg-gradient-to-r from-cyan-500 to-sky-500 text-white shadow-lg shadow-cyan-500/20'
                       : 'text-slate-300 hover:bg-white/10'
                   }`}
                 >
@@ -61,10 +76,12 @@ export function Shell({ children }: { children: React.ReactNode }) {
             </nav>
 
             <div className="flex items-center gap-2">
-              <div className="hidden items-center gap-1 rounded-full border border-white/10 bg-white/5 p-1 sm:flex">
+              <div className="hidden items-center gap-1 rounded-full border border-white/10 bg-slate-900/70 p-1 sm:flex">
                 <button
                   className={`rounded-full px-3 py-1.5 text-xs font-medium transition ${
-                    network === 'testnet' ? 'bg-brand-600 text-white' : 'text-slate-400 hover:bg-white/10'
+                    network === 'testnet'
+                      ? 'bg-slate-800 text-white'
+                      : 'text-slate-300 hover:bg-slate-800/70'
                   }`}
                   onClick={() => setNetwork('testnet')}
                 >
@@ -72,7 +89,9 @@ export function Shell({ children }: { children: React.ReactNode }) {
                 </button>
                 <button
                   className={`rounded-full px-3 py-1.5 text-xs font-medium transition ${
-                    network === 'mainnet' ? 'bg-brand-600 text-white' : 'text-slate-400 hover:bg-white/10'
+                    network === 'mainnet'
+                      ? 'bg-slate-800 text-white'
+                      : 'text-slate-300 hover:bg-slate-800/70'
                   }`}
                   onClick={() => setNetwork('mainnet')}
                 >
@@ -80,14 +99,19 @@ export function Shell({ children }: { children: React.ReactNode }) {
                 </button>
               </div>
 
+              <button
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                className="hidden rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-slate-200 transition hover:bg-white/10 sm:inline-flex"
+              >
+                {theme === 'dark' ? 'Light mode' : 'Dark mode'}
+              </button>
+
               {connected ? (
-                <div className="flex items-center gap-2 rounded-full border border-emerald-500/20 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 px-4 py-2">
-                  <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-sm font-semibold text-emerald-300">
-                    {address?.slice(0, 8)}
-                  </span>
+                <div className="flex items-center gap-2 rounded-full border border-cyan-500/20 bg-cyan-500/10 px-4 py-2">
+                  <span className="h-2 w-2 rounded-full bg-cyan-400 animate-pulse" />
+                  <span className="text-sm font-semibold text-white">{address?.slice(0, 8)}</span>
                   <button
-                    className="ml-1 rounded-full border border-white/10 bg-white/5 px-2 py-1 text-xs transition hover:bg-white/10"
+                    className="ml-1 rounded-full border border-white/10 bg-slate-900 px-2 py-1 text-xs text-slate-100 transition hover:bg-slate-800"
                     onClick={disconnect}
                   >
                     ✕
@@ -96,7 +120,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
               ) : (
                 <button
                   onClick={() => setWalletModalOpen(true)}
-                  className="rounded-full bg-gradient-to-r from-brand-600 to-orange-600 px-5 py-2 text-sm font-bold text-white shadow-lg shadow-brand-600/30 transition hover:shadow-brand-600/50 active:scale-[0.97]"
+                  className="rounded-full bg-cyan-500 px-5 py-2 text-sm font-semibold text-slate-950 shadow-glow transition hover:bg-cyan-400 active:scale-[0.97]"
                 >
                   {status === 'connecting' ? 'Connecting…' : 'Connect Wallet'}
                 </button>
