@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState } from 'react';
+import * as StellarSdk from '@stellar/stellar-sdk';
+import { useWalletStore } from '@/store/wallet';
 
 interface WalletModalProps {
   isOpen: boolean;
@@ -20,6 +22,9 @@ const wallets = [
 export function WalletModal({ isOpen, onClose, onConnect, network, isConnecting }: WalletModalProps) {
   const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [signedXdr, setSignedXdr] = useState<string | null>(null);
+
+  const { connected, address, connect, signTransaction } = useWalletStore();
 
   if (!isOpen) return null;
 
@@ -27,7 +32,13 @@ export function WalletModal({ isOpen, onClose, onConnect, network, isConnecting 
     try {
       setError(null);
       setSelectedWallet(walletId);
-      await onConnect(walletId);
+      // Prefer calling local store connect when available so modal can continue showing
+      // the post-connection flow (address retrieval, signing). Fall back to onConnect prop.
+      if (connect) {
+        await connect(walletId, network);
+      } else {
+        await onConnect(walletId);
+      }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Connection failed';
       setError(errorMessage);
@@ -82,6 +93,67 @@ export function WalletModal({ isOpen, onClose, onConnect, network, isConnecting 
                 <p className="text-sm font-medium text-white">{wallet.name}</p>
               </button>
             ))}
+          </div>
+        )}
+
+        {connected && address && (
+          <div className="mt-4 rounded-2xl border border-white/10 bg-white/5 p-4">
+            <p className="text-sm text-slate-300">Connected as</p>
+            <p className="font-mono mt-1 break-all text-sm text-white">{address}</p>
+
+            <div className="mt-4 flex items-center gap-2">
+              <button
+                onClick={async () => {
+                  setError(null);
+                  setSignedXdr(null);
+                  try {
+                    const networkPassphrase = network === 'mainnet'
+                      ? 'Public Global Stellar Network ; September 2015'
+                      : 'Test SDF Network ; September 2015';
+
+                    // Build a minimal payment transaction to self for signing demo
+                    const account = new StellarSdk.Account(address!, '0');
+                    const tx = new StellarSdk.TransactionBuilder(account, {
+                      fee: StellarSdk.BASE_FEE,
+                      networkPassphrase,
+                    })
+                      .addOperation(StellarSdk.Operation.payment({
+                        destination: address!,
+                        asset: StellarSdk.Asset.native(),
+                        amount: '0.000001',
+                      }))
+                      .setTimeout(30)
+                      .build();
+
+                    const unsignedXdr = tx.toXDR();
+                    const signed = await signTransaction(unsignedXdr);
+                    setSignedXdr(signed);
+                  } catch (err) {
+                    const errorMessage = err instanceof Error ? err.message : 'Signing failed';
+                    setError(errorMessage);
+                  }
+                }}
+                className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400"
+              >
+                Request Signature
+              </button>
+
+              <button
+                onClick={() => {
+                  setSignedXdr(null);
+                }}
+                className="rounded-full border border-white/10 px-3 py-2 text-sm text-white"
+              >
+                Clear
+              </button>
+            </div>
+
+            {signedXdr && (
+              <div className="mt-3 rounded-md bg-white/5 p-3 text-xs text-slate-300">
+                <p className="font-semibold text-white">Signed XDR (truncated)</p>
+                <pre className="mt-2 max-h-48 overflow-auto text-xs">{signedXdr.slice(0, 800)}</pre>
+              </div>
+            )}
           </div>
         )}
 

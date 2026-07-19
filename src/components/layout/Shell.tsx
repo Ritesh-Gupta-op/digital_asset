@@ -24,7 +24,6 @@ export function Shell({ children }: { children: React.ReactNode }) {
   const handleConnectWallet = async (walletType: string) => {
     try {
       await connect(walletType, network);
-      setWalletModalOpen(false);
     } catch (error) {
       console.error('Failed to connect wallet:', error);
       throw error;
