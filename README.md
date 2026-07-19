@@ -7,7 +7,7 @@ Your one-click digital Asset license generator for NFTs, smart contracts, and to
 Creators often rely on fragmented licensing tools, manual royalty tracking, and opaque approval flows. LicenseCraft consolidates licensing, wallet interactions, activity tracking, and transaction monitoring into a production-style operating layer on Stellar.
 
 ## Deployed_link:
-  [vercel](https://digital-asset-xrme-ng6fhl9ou-zeroschenieders-projects.vercel.app)
+  [vercel](https://digital-asset-xrme.vercel.app/)
 
 ## Architecture diagram
 ```mermaid
