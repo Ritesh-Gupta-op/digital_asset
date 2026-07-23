@@ -7,4 +7,5 @@ coverage
 .env.local
 .env.*.local
 *.log
-/target
+target/
+Cargo.lock

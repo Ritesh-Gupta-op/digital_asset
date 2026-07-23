@@ -5,10 +5,12 @@ import { Button } from '@/components/ui/button';
 import { submitLicenseDraft } from '@/services/contract';
 import { useTransactionStore } from '@/store/transactions';
 import { useWalletStore } from '@/store/wallet';
+import { getSorobanConfig } from '@/lib/soroban';
 
 export default function TransactionsPage() {
   const { items, update } = useTransactionStore();
   const { connected, address, network } = useWalletStore();
+  const sorobanConfig = getSorobanConfig(network);
   const [recipient, setRecipient] = useState(address ?? '');
   const [amount, setAmount] = useState('0.0001');
   const [licenseTitle, setLicenseTitle] = useState('Creator license purchase');
@@ -93,6 +95,9 @@ export default function TransactionsPage() {
                   <h2 className="mt-2 text-2xl font-semibold text-slate-950 dark:text-white">License purchase form</h2>
                 </div>
                 <p className="text-sm text-slate-500 dark:text-slate-400">Submit an XLM payment and record license metadata on-chain.</p>
+                <p className={`text-sm font-medium ${sorobanConfig.isConfigured ? 'text-emerald-600 dark:text-emerald-300' : 'text-amber-600 dark:text-amber-300'}`}>
+                  Soroban mode: {sorobanConfig.mode}
+                </p>
               </div>
 
               <form className="grid gap-5" onSubmit={handleSubmit}>
