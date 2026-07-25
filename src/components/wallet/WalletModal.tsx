@@ -24,7 +24,7 @@ export function WalletModal({ isOpen, onClose, onConnect, network, isConnecting 
   const [error, setError] = useState<string | null>(null);
   const [signedXdr, setSignedXdr] = useState<string | null>(null);
 
-  const { connected, address, connect, signTransaction } = useWalletStore();
+  const { connected, address, signTransaction } = useWalletStore();
 
   if (!isOpen) return null;
 
@@ -32,13 +32,7 @@ export function WalletModal({ isOpen, onClose, onConnect, network, isConnecting 
     try {
       setError(null);
       setSelectedWallet(walletId);
-      // Prefer calling local store connect when available so modal can continue showing
-      // the post-connection flow (address retrieval, signing). Fall back to onConnect prop.
-      if (connect) {
-        await connect(walletId, network);
-      } else {
-        await onConnect(walletId);
-      }
+      await onConnect(walletId);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Connection failed';
       setError(errorMessage);
@@ -111,7 +105,6 @@ export function WalletModal({ isOpen, onClose, onConnect, network, isConnecting 
                       ? 'Public Global Stellar Network ; September 2015'
                       : 'Test SDF Network ; September 2015';
 
-                    // Build a minimal payment transaction to self for signing demo
                     const account = new StellarSdk.Account(address!, '0');
                     const tx = new StellarSdk.TransactionBuilder(account, {
                       fee: StellarSdk.BASE_FEE,
@@ -125,7 +118,7 @@ export function WalletModal({ isOpen, onClose, onConnect, network, isConnecting 
                       .setTimeout(30)
                       .build();
 
-                    const unsignedXdr = tx.toXDR();
+                    const unsignedXdr = tx.toEnvelope().toXDR('base64');
                     const signed = await signTransaction(unsignedXdr);
                     setSignedXdr(signed);
                   } catch (err) {
