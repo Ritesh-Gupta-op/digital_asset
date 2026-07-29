@@ -2,13 +2,33 @@
 
 Your one-click digital asset license generator for NFTs, smart contracts, and tokens on Stellar.
 
+## Submission Checklist & Comprehensive Requirements
+
+| Requirement | Status | Verification & Links |
+| --- | --- | --- |
+| **Public GitHub Repository** | ✅ Passed | [Ritesh-Gupta-op/digital_asset](https://github.com/Ritesh-Gupta-op/digital_asset) |
+| **Complete README Documentation** | ✅ Passed | Full architecture, setup, user feedback, survey data, testing, and CI/CD docs |
+| **15+ Meaningful Commits** | ✅ Passed | **21+ commits** ([View Commit History](https://github.com/Ritesh-Gupta-op/digital_asset/commits/main)) |
+| **Live Demo Link** | ✅ Passed | [Vercel Deployment Demo](https://digital-asset-xrme.vercel.app/) |
+| **Demo Video Link (1-2 min)** | ✅ Passed | [YouTube Demo Video](https://youtu.be/nJBHV42PgOs) |
+| **Deployed Contract Address** | ✅ Passed | [`CDBHJ72ROMTW...`](https://stellar.expert/explorer/testnet/contract/CDBHJ72ROMTWZC6OIL6TDCUFH6VJOB4CSODT5H6S6DJCQQAJQHBHY6R7) |
+| **Verifiable Transaction Hash** | ✅ Passed | [`f82f27ce4457...`](https://stellar.expert/explorer/testnet/tx/f82f27ce4457f6b9bde9fdae02afeee0e19eb92bdc4030a88bd347abd145f1b8) |
+| **3+ Passing Unit Tests** | ✅ Passed | 5 test files, 6 tests passing (`npm run test`) |
+| **Proof of 10+ Wallet Interactions** | ✅ Passed | Detailed under [Wallet Integration Proof](#wallet-integration-proof-10-interactions) |
+| **User Feedback Summary & Survey Data** | ✅ Passed | Detailed 10-person feedback table ([View Survey Data](#survey-feedback-data)) |
+| **Product UI Screenshots** | ✅ Passed | Dashboard, Mobile UI, Analytics ([View Screenshots](#screenshots)) |
+| **CI/CD Pipeline Running** | ✅ Passed | GitHub Actions workflows ([pr-checks.yml](file:///.github/workflows/pr-checks.yml) & [deploy.yml](file:///.github/workflows/deploy.yml)) |
+
 ## Quick Links
 - **Live Demo**: [Vercel Deployment](https://digital-asset-xrme.vercel.app/)
-- **GitHub**: [Ritesh-Gupta-op/digital_asset](https://github.com/Ritesh-Gupta-op/digital_asset)
+- **Demo Video**: [YouTube Video](https://youtu.be/nJBHV42PgOs)
+- **GitHub Repository**: [Ritesh-Gupta-op/digital_asset](https://github.com/Ritesh-Gupta-op/digital_asset)
 - **License Registry Contract**: [`CDBHJ72ROMTW...`](https://stellar.expert/explorer/testnet/contract/CDBHJ72ROMTWZC6OIL6TDCUFH6VJOB4CSODT5H6S6DJCQQAJQHBHY6R7)
 - **Royalty Router Contract**: [`CDKY4A5PUKHB...`](https://stellar.expert/explorer/testnet/contract/CDKY4A5PUKHBA43ZSIQHVCBH5EBV3JQAPWWC4SV6ZKPILFTVYEY4ECFB)
-- **Deployment Tx (Registry)**: [`e9505eb7cca9...`](https://stellar.expert/explorer/testnet/tx/e9505eb7cca987e911fc372c3409ab79245243b78d89453dda789a7d585fd791)
-- **Deployment Tx (Router)**: [`a15365dc55ee...`](https://stellar.expert/explorer/testnet/tx/a15365dc55ee5e1564289f58d19fcf11baef4bca37d189e75312801c50240cac)
+- **Contract Call Tx Hash**: [`f82f27ce4457...`](https://stellar.expert/explorer/testnet/tx/f82f27ce4457f6b9bde9fdae02afeee0e19eb92bdc4030a88bd347abd145f1b8)
+- **Deployment Tx Hash**: [`e9505eb7cca9...`](https://stellar.expert/explorer/testnet/tx/e9505eb7cca987e911fc372c3409ab79245243b78d89453dda789a7d585fd791)
+
+
 
 
 
