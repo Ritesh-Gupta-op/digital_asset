@@ -49,7 +49,7 @@ describe('TransactionsPage', () => {
       target: { value: '0.0001' },
     });
 
-    fireEvent.click(screen.getByRole('button', { name: /purchase license/i }));
+    fireEvent.click(screen.getByRole('button', { name: /submit on-chain transaction/i }));
 
     expect(submitLicenseDraftMock).toHaveBeenCalledWith(
       expect.objectContaining({ title: expect.any(String), terms: expect.any(String) }),

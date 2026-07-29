@@ -1,16 +1,22 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { submitLicenseDraft } from '@/services/contract';
-import { useTransactionStore } from '@/store/transactions';
+import { apiGetTransactions, ApiTransaction } from '@/services/api';
 import { useWalletStore } from '@/store/wallet';
 import { getSorobanConfig } from '@/lib/soroban';
+import { Skeleton, TableRowSkeleton } from '@/components/ui/skeleton';
+import { ErrorCard } from '@/components/ui/error-card';
 
 export default function TransactionsPage() {
-  const { items, update } = useTransactionStore();
   const { connected, address, network } = useWalletStore();
   const sorobanConfig = getSorobanConfig(network);
+
+  const [transactions, setTransactions] = useState<ApiTransaction[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+
   const [recipient, setRecipient] = useState(address ?? '');
   const [amount, setAmount] = useState('0.0001');
   const [licenseTitle, setLicenseTitle] = useState('Creator license purchase');
@@ -19,6 +25,23 @@ export default function TransactionsPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [explorerUrl, setExplorerUrl] = useState<string | null>(null);
+
+  const fetchTxs = async () => {
+    try {
+      setLoading(true);
+      setFetchError(null);
+      const res = await apiGetTransactions();
+      setTransactions(res.transactions);
+    } catch (err) {
+      setFetchError((err as Error).message || 'Failed to load transaction history');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTxs();
+  }, []);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -42,6 +65,9 @@ export default function TransactionsPage() {
       const url = `https://stellar.expert/explorer/${network}/tx/${result.hash}`;
       setSuccess('License purchase confirmed. View the transaction on Stellar Expert.');
       setExplorerUrl(url);
+
+      // Refresh API transactions
+      await fetchTxs();
     } catch (err) {
       const message = err instanceof Error ? err.message : 'License purchase failed';
       setError(message);
@@ -51,170 +77,157 @@ export default function TransactionsPage() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-100 text-slate-950 dark:bg-slate-950 dark:text-slate-100">
+    <main className="min-h-screen bg-slate-950 text-slate-100">
       <div className="mx-auto max-w-7xl px-6 py-10 sm:px-8 lg:px-10">
-        <div className="rounded-[32px] border border-slate-200 bg-white shadow-[0_30px_80px_-40px_rgba(15,23,42,0.4)] dark:border-slate-800 dark:bg-slate-950">
-          <div className="grid gap-8 px-6 py-8 lg:grid-cols-[1.4fr_0.9fr] lg:px-10">
-            <div className="space-y-4">
-              <p className="text-sm font-semibold uppercase tracking-[0.35em] text-cyan-600 dark:text-cyan-300">Transactions</p>
-              <h1 className="text-4xl font-black tracking-tight text-slate-950 dark:text-white sm:text-5xl">
-                Send payments and mint on-chain license records.
-              </h1>
-              <p className="max-w-2xl text-base leading-8 text-slate-600 dark:text-slate-300">
-                Keep all current wallet and transaction workflows, now surfaced in a cleaner payment page with a modern light/dark dashboard feel.
-              </p>
-            </div>
-            <div className="rounded-[28px] border border-slate-200 bg-slate-50 p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.35em] text-slate-500 dark:text-slate-400">Network</p>
-                  <p className="mt-2 text-2xl font-semibold text-slate-950 dark:text-white">{network}</p>
-                </div>
-                <div className={`rounded-full px-4 py-2 text-sm font-semibold ${connected ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-300' : 'bg-amber-500/15 text-amber-600 dark:text-amber-300'}`}>
-                  {connected ? 'Connected' : 'Disconnected'}
-                </div>
-              </div>
-              <div className="mt-6 grid gap-4">
-                <div className="rounded-3xl bg-white p-4 shadow-sm dark:bg-slate-950">
-                  <p className="text-sm text-slate-500 dark:text-slate-400">Active wallet</p>
-                  <p className="mt-3 text-lg font-semibold text-slate-950 dark:text-white">{connected ? address : 'No wallet linked'}</p>
-                </div>
-                <div className="rounded-3xl bg-white p-4 shadow-sm dark:bg-slate-950">
-                  <p className="text-sm text-slate-500 dark:text-slate-400">Last action</p>
-                  <p className="mt-3 text-lg font-semibold text-slate-950 dark:text-white">{isSending ? 'Submitting payment…' : 'Ready to send'}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-8 grid gap-6 xl:grid-cols-[1fr_0.9fr]">
-            <section className="rounded-[32px] border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-slate-950">
-              <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.35em] text-slate-500 dark:text-slate-400">Create payment</p>
-                  <h2 className="mt-2 text-2xl font-semibold text-slate-950 dark:text-white">License purchase form</h2>
-                </div>
-                <p className="text-sm text-slate-500 dark:text-slate-400">Submit an XLM payment and record license metadata on-chain.</p>
-                <p className={`text-sm font-medium ${sorobanConfig.isConfigured ? 'text-emerald-600 dark:text-emerald-300' : 'text-amber-600 dark:text-amber-300'}`}>
-                  Soroban mode: {sorobanConfig.mode}
+        <div className="grid gap-10 lg:grid-cols-2">
+          {/* Purchase Form */}
+          <div className="rounded-[32px] border border-slate-800 bg-slate-900/60 p-8 backdrop-blur-xl">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-cyan-400">
+                  Soroban Contract Call
                 </p>
+                <h1 className="mt-2 text-3xl font-extrabold text-white">License Purchase Form</h1>
+              </div>
+              <span className="rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-400 border border-emerald-500/20">
+                Mode: Live
+              </span>
+            </div>
+
+            <form onSubmit={handleSubmit} className="mt-8 space-y-5">
+              <div>
+                <label htmlFor="recipient-address" className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
+                  Issuer Wallet Address
+                </label>
+                <input
+                  id="recipient-address"
+                  type="text"
+                  value={recipient}
+                  onChange={(e) => setRecipient(e.target.value)}
+                  placeholder="G..."
+                  required
+                  className="w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none"
+                />
               </div>
 
-              <form className="grid gap-5" onSubmit={handleSubmit}>
-                <div className="grid gap-2">
-                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300" htmlFor="recipient-address">
-                    Issuer wallet address
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label htmlFor="license-title" className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
+                    License Title
                   </label>
                   <input
-                    id="recipient-address"
-                    className="rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-950 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100"
-                    placeholder="G..."
-                    value={recipient}
-                    onChange={(event) => setRecipient(event.target.value)}
-                  />
-                </div>
-                <div className="grid gap-2 sm:grid-cols-2">
-                  <div className="grid gap-2">
-                    <label className="text-sm font-medium text-slate-700 dark:text-slate-300" htmlFor="license-title">
-                      License title
-                    </label>
-                    <input
-                      id="license-title"
-                      className="rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-950 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100"
-                      placeholder="Creator license purchase"
-                      value={licenseTitle}
-                      onChange={(event) => setLicenseTitle(event.target.value)}
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <label className="text-sm font-medium text-slate-700 dark:text-slate-300" htmlFor="amount">
-                      Amount (XLM)
-                    </label>
-                    <input
-                      id="amount"
-                      className="rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-950 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100"
-                      placeholder="0.0001"
-                      value={amount}
-                      onChange={(event) => setAmount(event.target.value)}
-                    />
-                  </div>
-                </div>
-                <div className="grid gap-2">
-                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300" htmlFor="license-terms">
-                    License terms
-                  </label>
-                  <textarea
-                    id="license-terms"
-                    className="min-h-[120px] rounded-3xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-950 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100"
-                    placeholder="Digital asset licensing rights"
-                    value={licenseTerms}
-                    onChange={(event) => setLicenseTerms(event.target.value)}
+                    id="license-title"
+                    type="text"
+                    value={licenseTitle}
+                    onChange={(e) => setLicenseTitle(e.target.value)}
+                    required
+                    className="w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-sm text-white focus:border-cyan-500 focus:outline-none"
                   />
                 </div>
 
-                {error ? <p className="text-sm text-rose-500">{error}</p> : null}
-                {success ? (
-                  <p className="text-sm text-slate-700 dark:text-slate-200">
-                    {success}{' '}
-                    {explorerUrl ? (
-                      <a href={explorerUrl} target="_blank" rel="noreferrer" className="font-semibold text-cyan-600 hover:text-cyan-500 dark:text-cyan-300">
-                        View transaction
-                      </a>
-                    ) : null}
-                  </p>
-                ) : null}
-
-                <Button type="submit" disabled={isSending}>
-                  {isSending ? 'Sending…' : 'Purchase license'}
-                </Button>
-              </form>
-            </section>
-
-            <section className="rounded-[32px] border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-slate-950">
-              <div className="mb-6 flex items-center justify-between gap-4">
                 <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.35em] text-slate-500 dark:text-slate-400">Recent activity</p>
-                  <h2 className="mt-2 text-2xl font-semibold text-slate-950 dark:text-white">Historic payment log</h2>
+                  <label htmlFor="license-amount" className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
+                    Amount (XLM)
+                  </label>
+                  <input
+                    id="license-amount"
+                    type="number"
+                    step="0.0001"
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                    required
+                    className="w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-sm text-white focus:border-cyan-500 focus:outline-none"
+                  />
                 </div>
-                <span className="rounded-full bg-cyan-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-cyan-600 dark:bg-cyan-500/15 dark:text-cyan-300">
-                  Live
-                </span>
               </div>
-              <div className="space-y-4">
-                {items.length ? (
-                  items.map((item) => (
-                    <div key={item.id} className="rounded-[28px] border border-slate-200 bg-slate-50 p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-                      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                          <p className="font-semibold text-slate-950 dark:text-white">{item.description}</p>
-                          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{item.hash ? `Hash: ${item.hash.slice(0, 12)}...` : 'Awaiting confirmation'}</p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                            item.status === 'confirmed'
-                              ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-300'
-                              : item.status === 'failed'
-                              ? 'bg-rose-500/10 text-rose-600 dark:text-rose-300'
-                              : 'bg-amber-500/10 text-amber-600 dark:text-amber-300'
-                          }`}>
-                            {item.status}
-                          </span>
-                          {item.explorerUrl ? (
-                            <a href={item.explorerUrl} target="_blank" rel="noreferrer" className="text-sm font-semibold text-cyan-600 hover:text-cyan-500 dark:text-cyan-300">
-                              View
-                            </a>
-                          ) : null}
-                        </div>
-                      </div>
+
+              <div>
+                <label htmlFor="license-terms" className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
+                  License Terms
+                </label>
+                <textarea
+                  id="license-terms"
+                  rows={3}
+                  value={licenseTerms}
+                  onChange={(e) => setLicenseTerms(e.target.value)}
+                  className="w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-sm text-white focus:border-cyan-500 focus:outline-none resize-none"
+                />
+              </div>
+
+              {error && <div className="text-xs text-rose-400">{error}</div>}
+              {success && <div className="text-xs text-emerald-400">{success}</div>}
+
+              <Button
+                type="submit"
+                disabled={isSending}
+                className="w-full rounded-full bg-cyan-500 py-3 text-sm font-semibold text-slate-950 shadow-glow transition hover:bg-cyan-400 disabled:opacity-50"
+              >
+                {isSending ? 'Submitting to Soroban Contract…' : 'Submit On-Chain Transaction'}
+              </Button>
+            </form>
+          </div>
+
+          {/* Persistent Transaction History */}
+          <div className="rounded-[32px] border border-slate-800 bg-slate-900/60 p-8 backdrop-blur-xl space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-slate-400">
+                  Backend API Persistence
+                </p>
+                <h2 className="mt-1 text-2xl font-bold text-white">Transaction Logs</h2>
+              </div>
+              <button
+                onClick={fetchTxs}
+                className="rounded-full border border-slate-800 bg-slate-950 px-3 py-1 text-xs font-semibold text-slate-300 transition hover:bg-slate-800"
+              >
+                🔄 Refresh
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {loading ? (
+                <div className="space-y-3">
+                  <TableRowSkeleton />
+                  <TableRowSkeleton />
+                  <TableRowSkeleton />
+                </div>
+              ) : fetchError ? (
+                <ErrorCard message={fetchError} retry={fetchTxs} />
+              ) : transactions.length === 0 ? (
+                <div className="rounded-[28px] border border-dashed border-slate-800 p-8 text-center text-xs text-slate-500">
+                  No confirmed transactions recorded yet. Submit a transaction above.
+                </div>
+              ) : (
+                transactions.map((tx) => (
+                  <div
+                    key={tx.id}
+                    className="rounded-[28px] border border-slate-800 bg-slate-950 p-5 space-y-2 shadow-sm transition hover:border-slate-700"
+                  >
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                      <p className="text-sm font-semibold text-white">{tx.description}</p>
+                      <span className="inline-flex rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-400 border border-emerald-500/20">
+                        {tx.status}
+                      </span>
                     </div>
-                  ))
-                ) : (
-                  <div className="rounded-[28px] border border-dashed border-slate-300 bg-slate-50 p-8 text-center text-slate-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400">
-                    No transaction history yet. Submit a license purchase to see your recent activity.
+
+                    {tx.hash && (
+                      <p className="text-xs text-slate-400 font-mono">Hash: {tx.hash}</p>
+                    )}
+
+                    {tx.explorerUrl && (
+                      <a
+                        href={tx.explorerUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex text-xs font-semibold text-cyan-400 hover:text-cyan-300"
+                      >
+                        View on Stellar Expert Explorer →
+                      </a>
+                    )}
                   </div>
-                )}
-              </div>
-            </section>
+                ))
+              )}
+            </div>
           </div>
         </div>
       </div>

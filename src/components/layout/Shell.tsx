@@ -9,10 +9,11 @@ import { WalletModal } from '@/components/wallet/WalletModal';
 
 const nav = [
   { href: '/dashboard' as const, label: 'Dashboard' },
-  { href: '/activity' as const, label: 'Activity' },
+  { href: '/licenses' as const, label: 'Licenses' },
   { href: '/transactions' as const, label: 'Transactions' },
-  { href: '/settings' as const, label: 'Settings' },
   { href: '/analytics' as const, label: 'Analytics' },
+  { href: '/activity' as const, label: 'Activity' },
+  { href: '/settings' as const, label: 'Settings' },
 ];
 
 export function Shell({ children }: { children: React.ReactNode }) {

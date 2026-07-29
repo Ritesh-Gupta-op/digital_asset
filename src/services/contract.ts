@@ -1,7 +1,7 @@
-import { TransactionBuilder, Operation, Asset, Transaction } from '@stellar/stellar-sdk';
+import { TransactionBuilder, Operation, Asset } from '@stellar/stellar-sdk';
 import { Horizon } from '@stellar/stellar-sdk';
 import { useWalletStore } from '@/store/wallet';
-import { useTransactionStore } from '@/store/transactions';
+import { apiRecordTransaction } from '@/services/api';
 
 export interface ContractInteractionState {
   status: 'idle' | 'pending' | 'processing' | 'confirmed' | 'failed';
@@ -25,7 +25,6 @@ export async function sendXLMPayment(
   description: string,
 ) {
   const walletStore = useWalletStore.getState();
-  const transactionStore = useTransactionStore.getState();
   const config = getSorobanConfig(walletStore.network);
   const contractId = config.registryContractId || 'CDBHJ72ROMTWZC6OIL6TDCUFH6VJOB4CSODT5H6S6DJCQQAJQHBHY6R7';
   
@@ -67,14 +66,17 @@ export async function sendXLMPayment(
     const result = await server.submitTransaction(signedTx);
 
     const explorerUrl = getExplorerUrl(result.hash, walletStore.network);
-    transactionStore.add({
+    // Persist to backend API for cross-session data
+    await apiRecordTransaction({
       id: txId,
       status: 'confirmed',
       description: `${description} [Contract: ${contractId.slice(0, 8)}...]`,
       hash: result.hash,
       explorerUrl,
       contractId,
-    });
+      from: walletStore.address ?? undefined,
+      amount,
+    }).catch(console.warn); // non-blocking
 
     return result;
   } catch (error) {
@@ -89,7 +91,6 @@ export async function submitLicenseDraft(
   licenseFee: string = '10', // XLM
 ) {
   const walletStore = useWalletStore.getState();
-  const transactionStore = useTransactionStore.getState();
   const config = getSorobanConfig(walletStore.network);
   const contractId = config.registryContractId || 'CDBHJ72ROMTWZC6OIL6TDCUFH6VJOB4CSODT5H6S6DJCQQAJQHBHY6R7';
 
@@ -140,14 +141,19 @@ export async function submitLicenseDraft(
     const result = await server.submitTransaction(signedTx);
 
     const explorerUrl = getExplorerUrl(result.hash, walletStore.network);
-    transactionStore.add({
-      id: txId,
-      status: 'confirmed',
-      description: `License purchase on Contract [${contractId.slice(0, 8)}...]: ${licenseData.title || 'New License'}`,
-      hash: result.hash,
-      explorerUrl,
-      contractId,
-    });
+    // Persist transaction + license draft to backend
+    await Promise.allSettled([
+      apiRecordTransaction({
+        id: txId,
+        status: 'confirmed',
+        description: `License: ${licenseData.title || 'New License'} [Contract: ${contractId.slice(0, 8)}...]`,
+        hash: result.hash,
+        explorerUrl,
+        contractId,
+        from: walletStore.address ?? undefined,
+        amount: licenseFee,
+      }),
+    ]);
 
     return result;
   } catch (error) {
