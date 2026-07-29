@@ -98,6 +98,9 @@ cp .env.example .env.local
 npm run dev
 ```
 
+## live demo video:
+[Demo](https://youtu.be/nJBHV42PgOs)
+
 ## Environment Setup
 ```env
 NEXT_PUBLIC_HORIZON_URL=https://horizon-testnet.stellar.org
