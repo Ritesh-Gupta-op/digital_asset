@@ -58,6 +58,21 @@ User → Next.js Frontend → Stellar Wallets Kit
 - Activity feed provides transparency into licensing events
 - Settings page allows network and preferences customization
 
+### Survey Feedback Data
+| Timestamp | Name | Wallet Address | Network | Bug/Issue | Improvement Requested | Recommend | Rating | Transaction Id |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 03/07/2026 22:00:11 | Amitabh Dey | 0xdd464a965b852f338852408b0ae99b5af846e760 | testnet | yes | Asks for access to SSO, not good | no | 3 | none |
+| 03/07/2026 23:54:19 | Jayjit Dutta | GDRDK5ISJVJHFEDCSJ6WZA5RBU63TPSHCRZPLKSL425IQL5Y5J2T6UFT | testnet | No | everything is looking fine | yes | 4 | none |
+| 05/07/2026 22:04:39 | Ranit Sarkar | GCWHNNUTCNGZ43LW5AVXTHB5G2RMO3APWIBGA52NAGUISINDIS53E6UO | testnet | yes | none | yes | 4 | none |
+| 06/07/2026 21:32:58 | Ankush Shaw | GBBIG4HLPGTLG6BH6YREVWJXEQ4NX74HTD444JD6A6XYS7DOFL2J6DEI | testnet | No | improve user experience by adding steps to complete payment | yes | 4 | f82f27ce4457f6b9bde9fdae02afeee0e19eb92bdc4030a88bd347abd145f1b8 |
+| 17/07/2026 21:44:41 | JAYJIT DUTTA | GDC7SMIT66RK3ACNLJ4WJVB3RE7TTN3UAZNAIHQ2OC7I3GRTJBDIY5SI | testnet | No | It will be better if docs are added. | yes | 5 | e5966a4a0df0cfc418929b8a5eb0420e76ac8e03b45340811343cde65cf36423 |
+| 22/07/2026 22:55:51 | Sohan Sarkar | GA5B7EJJ3SRB2VKWTCKTVWUV6R2UTLUJGRUXWSAAXI3BE4B5PUZZ4YCF | testnet | No | make the UI more understanding | yes | 4 | d72c67d101165016c370fd563fa2a9fe03372d100c6dc9e73150eb30bc6247de |
+| 23/07/2026 11:53:27 | Arpan Basak | GBPE3IY44M4ZLYSCKXVXMZPYRA77OKVWDOKIFKCLV4KX5GU7ZI6ZP2SV | testnet | yes/No | none | yes | 5 | d85e9522c391af8955ae58e537bf19dd256ef6f1a3bb72a401425cd29d1c7d56 |
+| 23/07/2026 12:16:51 | Harshit Jha | GBC4TQKSVJ5O6TTRIDFDHQKZ7HISHF2RMMI24W6JRN3U6N4DYJ77UJFB | testnet | No | none | yes | 5 | 52eb740e7d93af3ed046a600ce2db09c4f67707e62c45079d76eedab7b52b1cf |
+| 23/07/2026 14:29:20 | Gyan Prakash Tiwari | GCBX3XCLXXDRCAH83ZJQBJGLMBS22QTGPFRH56ZXZCZFHNUD3ZHBK25S | mainnet | No | All good. | yes | 5 | None |
+| 23/07/2026 23:57:57 | Ranit Pal | GDFLHVAXB37QVIPV7LWLEIAPHQ7TYXG36LXX3CHMBFEQA67GDB44QLPI | testnet | No | Add a DOCS page | maybe | 3 | e0af52102c1bb9cea381d9ccd6d65c3dc3d15e69d21291aa561d07c201c062ed |
+| 25/07/2026 18:31:18 | Ankit Patel | GCQ5RM5NUQP5TAY5VFDLSLVKBROLV3CBROAN3CBTS4DWYFHLJOJCWC7V | testnet | yes | wallet connection/theme settings reset on every page navigation; sticky header overlaps content on scroll; inconsistent/fake-looking stats | yes | 4 | 01704a0511b6df340a8458922d60898042e5afbf320317d97ae7a6d08148da84 |
+
 ## Screenshots
 
 ### Product UI - Dashboard
