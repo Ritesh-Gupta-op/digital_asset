@@ -171,12 +171,38 @@ npm run test:watch   # Watch mode
 4. **Deploy Web Application**: `vercel deploy`
 
 
-## CI/CD Pipeline
+## 🧪 CI/CD Pipeline
 
-LicenseCraft uses **GitHub Actions** for automated continuous integration and continuous deployment across both the frontend web app and Soroban Rust smart contracts.
+LicenseCraft uses **GitHub Actions** for automated continuous integration, Rust smart contract verification, and automated continuous deployment.
 
+![Rust Tests Status](https://github.com/Ritesh-Gupta-op/digital_asset/actions/workflows/rust-test.yml/badge.svg)
 ![PR Checks Status](https://github.com/Ritesh-Gupta-op/digital_asset/actions/workflows/pr-checks.yml/badge.svg)
 ![Deploy Status](https://github.com/Ritesh-Gupta-op/digital_asset/actions/workflows/deploy.yml/badge.svg)
+
+### Pipeline Architecture
+
+```mermaid
+graph TD
+    A[git push origin main] --> B[GitHub Actions: rust-test.yml]
+    
+    subgraph GH [GitHub Actions Pipeline]
+        B1[Workflow Triggered] --> B2[Setup Rust Stable Toolchain]
+        B2 --> B3[rustup target add wasm32-unknown-unknown]
+        B3 --> B4["Cache ~/.cargo/registry (dependency caching)"]
+        B4 --> B5[cd contracts/]
+        B5 --> B6[cargo test --workspace]
+    end
+
+    subgraph Test_Suites ["Test Suites (11 total passing)"]
+        T1["license_registry: 3 tests<br/>✔ creates_and_reads_license<br/>✔ activates_license<br/>✔ rejects_invalid_royalty"]
+        T2["royalty_router: 2 tests<br/>✔ stores_registry_address<br/>✔ validates_royalty_input"]
+        T3["frontend_vitest: 6 tests<br/>✔ soroban_config_test<br/>✔ wallet_store_test<br/>✔ transactions_page_test"]
+    end
+
+    B6 --> T1
+    B6 --> T2
+    B6 --> T3
+```
 
 ### Pipeline Architecture
 
