@@ -76,13 +76,15 @@ User → Next.js Frontend → Stellar Wallets Kit
 ## Screenshots
 
 ### Product UI - Dashboard
-![Dashboard](https://github.com/user-attachments/assets/d8e47afa-94f1-457e-ad24-3eef9e9d1a42)
+<img width="1916" height="865" alt="{1FB10471-B083-4252-B504-226769A5489F}" src="https://github.com/user-attachments/assets/2e81eced-4bdc-4dcd-88c4-7ec052662c97" />
+
 
 ### Mobile Responsive Design
-![Mobile](https://github.com/user-attachments/assets/86e8da5d-5205-4245-aa8b-cc37203ee9f8)
+<img width="720" height="1600" alt="WhatsApp Image 2026-07-27 at 13 50 50" src="https://github.com/user-attachments/assets/4e68e3fc-79cb-4f70-8875-956ece786a4b" />
+
 
 ### Analytics & Transaction Monitoring
-![Analytics](https://github.com/user-attachments/assets/87eefdd6-2453-4fc9-8a7a-2c33e65fd85f)
+<img width="1896" height="861" alt="{C1F0EF98-8603-47AF-98EA-F7B1F3FE376A}" src="https://github.com/user-attachments/assets/8058e1c8-c9c7-4f6d-9652-26c3c9a384b1" />
 
 ## Getting Started
 ```bash
