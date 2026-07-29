@@ -73,6 +73,9 @@ User → Next.js Frontend → Stellar Wallets Kit
 | 23/07/2026 23:57:57 | Ranit Pal | GDFLHVAXB37QVIPV7LWLEIAPHQ7TYXG36LXX3CHMBFEQA67GDB44QLPI | testnet | No | Add a DOCS page | maybe | 3 | e0af52102c1bb9cea381d9ccd6d65c3dc3d15e69d21291aa561d07c201c062ed |
 | 25/07/2026 18:31:18 | Ankit Patel | GCQ5RM5NUQP5TAY5VFDLSLVKBROLV3CBROAN3CBTS4DWYFHLJOJCWC7V | testnet | yes | wallet connection/theme settings reset on every page navigation; sticky header overlaps content on scroll; inconsistent/fake-looking stats | yes | 4 | 01704a0511b6df340a8458922d60898042e5afbf320317d97ae7a6d08148da84 |
 
+
+## link to spreadsheet : [sheet](https://docs.google.com/spreadsheets/d/1oU1OniQRBmVjut-JQuv8yjLFAV3XqPH_MBoLEB6fRGg/edit?usp=sharing)
+
 ## Screenshots
 
 ### Product UI - Dashboard
