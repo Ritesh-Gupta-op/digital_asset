@@ -127,9 +127,52 @@ npm run test:watch   # Watch mode
 4. Deploy app: `vercel deploy`
 
 ## CI/CD Pipeline
-The repository includes GitHub Actions workflows for automated checks and deployment:
-- `pr-checks.yml`: runs on every pull request to `main`, installs dependencies, and runs `npm run test`
-- `deploy.yml`: runs on push to `main`, installs dependencies, runs `npm run build`, and contains a placeholder deployment step for hosting provider integration
+
+LicenseCraft uses **GitHub Actions** for automated continuous integration and continuous deployment across both the frontend web app and Soroban Rust smart contracts.
+
+![PR Checks Status](https://github.com/Ritesh-Gupta-op/digital_asset/actions/workflows/pr-checks.yml/badge.svg)
+![Deploy Status](https://github.com/Ritesh-Gupta-op/digital_asset/actions/workflows/deploy.yml/badge.svg)
+
+### Pipeline Architecture
+
+```
+[ Code Change / PR ] ──► [ GitHub Actions ] ──┬──► [ 1. Frontend Test & Build ] (Vitest, Next.js)
+                                              ├──► [ 2. Soroban Contract Check ] (wasm32 rust target)
+                                              └──► [ 3. Automated Vercel Deploy ] (On Push to Main)
+```
+
+### Workflows Overview
+
+| Workflow | File | Trigger | Description |
+| --- | --- | --- | --- |
+| **PR Checks & Verification** | [pr-checks.yml](file:///.github/workflows/pr-checks.yml) | Pull Requests to `main`, `develop` | Runs frontend unit tests, verifies Next.js build, and compiles Soroban Rust smart contracts (`license_registry` & `royalty_router`). |
+| **Continuous Deployment** | [deploy.yml](file:///.github/workflows/deploy.yml) | Push to `main` | Validates test suite, builds production artifacts, and automatically deploys to Vercel production environment. |
+
+### Workflow Details
+
+#### 1. PR Checks (`.github/workflows/pr-checks.yml`)
+- **Frontend Checks**:
+  - Checks out repository and sets up Node.js `v20` with `npm` caching.
+  - Executes `npm ci` for clean dependency installation.
+  - Runs unit tests via Vitest (`npm run test`).
+  - Builds Next.js production bundle (`npm run build`).
+- **Soroban Contract Verification**:
+  - Sets up Rust toolchain with `wasm32-unknown-unknown` target.
+  - Compiles `license_registry` smart contract.
+  - Compiles `royalty_router` smart contract.
+
+#### 2. Continuous Deployment (`.github/workflows/deploy.yml`)
+- **Validation Stage**: Ensures unit tests and builds succeed on the `main` branch.
+- **Deploy Stage**: Uses `amondnet/vercel-action` to trigger a zero-downtime deployment to Vercel Production.
+
+### Required Secrets for Automated Deployment
+
+To enable automated deployment to Vercel via GitHub Actions, add the following in GitHub Repository → **Settings** → **Secrets and variables** → **Actions**:
+
+- `VERCEL_TOKEN`: Vercel Personal Access Token
+- `VERCEL_ORG_ID`: Vercel Team/User Org ID
+- `VERCEL_PROJECT_ID`: Vercel Project ID
+
 
 ## Security
 - Authenticated contract entry points

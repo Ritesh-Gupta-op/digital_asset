@@ -1,16 +1,53 @@
-name: PR Checks
+name: PR Checks & Verification
 
 on:
   pull_request:
-    branches: [main]
+    branches: [ main, develop ]
+  push:
+    branches: [ develop ]
 
 jobs:
-  test:
+  frontend-checks:
+    name: Frontend Lint, Test & Build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm ci
-      - run: npm run test
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Tests
+        run: npm run test
+
+      - name: Build Next.js App
+        run: npm run build
+
+  contract-checks:
+    name: Soroban Smart Contract Verification
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Build License Registry Contract
+        run: |
+          cd contracts/license_registry
+          cargo build --target wasm32-unknown-unknown --release
+
+      - name: Build Royalty Router Contract
+        run: |
+          cd contracts/royalty_router
+          cargo build --target wasm32-unknown-unknown --release
+
