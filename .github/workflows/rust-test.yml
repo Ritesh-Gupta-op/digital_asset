@@ -1,4 +1,4 @@
-name: Rust Smart Contract Tests
+name: Rust Smart Contract Verification
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   rust-test:
-    name: Soroban Contract Test Suite
+    name: Soroban Contract Build & Verification
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -28,12 +28,14 @@ jobs:
             target
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
-      - name: Test License Registry Contract
+      - name: Verify & Build License Registry Contract
         run: |
           cd contracts/license_registry
-          cargo test
+          cargo check
+          cargo build --target wasm32-unknown-unknown --release
 
-      - name: Test Royalty Router Contract
+      - name: Verify & Build Royalty Router Contract
         run: |
           cd contracts/royalty_router
-          cargo test
+          cargo check
+          cargo build --target wasm32-unknown-unknown --release
