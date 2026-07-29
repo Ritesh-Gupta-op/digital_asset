@@ -1,7 +1,8 @@
+#![no_std]
 #![allow(clippy::needless_pass_by_value)]
 
 use soroban_sdk::{
-    contract, contractclient, contracterror, contractimpl, contracttype, Address, BytesN, Env,
+    contract, contractclient, contracterror, contractimpl, contracttype, panic_with_error, Address, BytesN, Env,
     Symbol,
 };
 
@@ -19,8 +20,8 @@ pub trait LicenseRegistryContract {
 #[contracttype]
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum DataKey {
-    Admin = 0,
-    Registry = 1,
+    Admin,
+    Registry,
 }
 
 #[contracterror]
@@ -36,7 +37,7 @@ pub struct RoyaltyRouter;
 
 #[contractimpl]
 impl RoyaltyRouter {
-    pub fn __constructor(env: Env, admin: Address, registry: Address) {
+    pub fn init(env: Env, admin: Address, registry: Address) {
         env.storage().instance().set(&DataKey::Admin, &admin);
         env.storage().instance().set(&DataKey::Registry, &registry);
     }
@@ -61,6 +62,7 @@ impl RoyaltyRouter {
 
 #[cfg(test)]
 mod test {
+    extern crate std;
     use super::*;
     use soroban_sdk::testutils::Address as TestAddress;
 
@@ -70,7 +72,7 @@ mod test {
         let admin = Address::generate(&env);
         let registry = Address::generate(&env);
         let contract = RoyaltyRouterClient::new(&env, &env.register_contract(None, RoyaltyRouter {}));
-        contract.__constructor(&admin, &registry);
+        contract.init(&admin, &registry);
         assert_eq!(contract.get_registry(), registry);
     }
 
@@ -80,7 +82,7 @@ mod test {
         let admin = Address::generate(&env);
         let registry = Address::generate(&env);
         let contract = RoyaltyRouterClient::new(&env, &env.register_contract(None, RoyaltyRouter {}));
-        contract.__constructor(&admin, &registry);
+        contract.init(&admin, &registry);
         let creator = Address::generate(&env);
         let licensee = Address::generate(&env);
         let terms_hash = BytesN::from_array(&env, &[4u8; 32]);
@@ -90,3 +92,4 @@ mod test {
         assert!(result.is_err());
     }
 }
+

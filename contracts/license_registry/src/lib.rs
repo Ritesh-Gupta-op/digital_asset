@@ -1,17 +1,18 @@
+#![no_std]
 #![allow(clippy::needless_pass_by_value)]
 
 use soroban_sdk::{
-    contract, contracterror, contractimpl, contracttype, Address, BytesN, Env, Symbol, Vec,
+    contract, contracterror, contractimpl, contracttype, panic_with_error, Address, BytesN, Env, Symbol, Vec,
 };
 
 #[contracttype]
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum DataKey {
-    Admin = 0,
-    Owner = 1,
-    LicenseCounter = 2,
-    License(u128) = 3,
-    CreatorLicenses(Address) = 4,
+    Admin,
+    Owner,
+    LicenseCounter,
+    License(u128),
+    CreatorLicenses(Address),
 }
 
 #[contracterror]
@@ -41,7 +42,7 @@ pub struct LicenseRegistry;
 
 #[contractimpl]
 impl LicenseRegistry {
-    pub fn __constructor(env: Env, admin: Address) {
+    pub fn init(env: Env, admin: Address) {
         env.storage().instance().set(&DataKey::Admin, &admin);
         env.storage().instance().set(&DataKey::Owner, &admin);
         env.storage().instance().set(&DataKey::LicenseCounter, &0u128);
@@ -72,7 +73,7 @@ impl LicenseRegistry {
         env.storage().persistent().set(&DataKey::License(id), &record);
         let mut licenses = env.storage().persistent().get(&DataKey::CreatorLicenses(creator.clone())).unwrap_or(Vec::new(&env));
         licenses.push_back(record.clone());
-        env.storage().persistent().set(&DataKey::CreatorLicenses(creator), &licenses);
+        env.storage().persistent().set(&DataKey::CreatorLicenses(creator.clone()), &licenses);
         env.storage().instance().set(&DataKey::LicenseCounter, &id);
 
         env.events().publish((Symbol::new(&env, "license_created"), id), (creator, licensee, terms_hash, royalty_bps));
@@ -115,6 +116,7 @@ impl LicenseRegistry {
 
 #[cfg(test)]
 mod test {
+    extern crate std;
     use super::*;
     use soroban_sdk::testutils::Address as TestAddress;
 
@@ -125,7 +127,7 @@ mod test {
         let creator = Address::generate(&env);
         let licensee = Address::generate(&env);
         let contract = LicenseRegistryClient::new(&env, &env.register_contract(None, LicenseRegistry {}));
-        contract.__constructor(&admin);
+        contract.init(&admin);
 
         let terms_hash = BytesN::from_array(&env, &[1u8; 32]);
         let id = contract.init_license(&creator, &licensee, &terms_hash, &2000);
@@ -141,7 +143,7 @@ mod test {
         let creator = Address::generate(&env);
         let licensee = Address::generate(&env);
         let contract = LicenseRegistryClient::new(&env, &env.register_contract(None, LicenseRegistry {}));
-        contract.__constructor(&admin);
+        contract.init(&admin);
 
         let terms_hash = BytesN::from_array(&env, &[2u8; 32]);
         let id = contract.init_license(&creator, &licensee, &terms_hash, &1500);
@@ -157,7 +159,7 @@ mod test {
         let creator = Address::generate(&env);
         let licensee = Address::generate(&env);
         let contract = LicenseRegistryClient::new(&env, &env.register_contract(None, LicenseRegistry {}));
-        contract.__constructor(&admin);
+        contract.init(&admin);
 
         let terms_hash = BytesN::from_array(&env, &[3u8; 32]);
         let result = std::panic::catch_unwind(|| {
@@ -166,3 +168,4 @@ mod test {
         assert!(result.is_err());
     }
 }
+

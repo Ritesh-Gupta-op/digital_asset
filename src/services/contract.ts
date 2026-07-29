@@ -17,6 +17,8 @@ export function getExplorerUrl(hash: string, network: 'testnet' | 'mainnet' = 't
   return `https://stellar.expert/explorer/${network}/tx/${hash}`;
 }
 
+import { getSorobanConfig } from '@/lib/soroban';
+
 export async function sendXLMPayment(
   destination: string,
   amount: string,
@@ -24,23 +26,21 @@ export async function sendXLMPayment(
 ) {
   const walletStore = useWalletStore.getState();
   const transactionStore = useTransactionStore.getState();
+  const config = getSorobanConfig(walletStore.network);
+  const contractId = config.registryContractId || 'CDBHJ72ROMTWZC6OIL6TDCUFH6VJOB4CSODT5H6S6DJCQQAJQHBHY6R7';
   
   if (!walletStore.connected || !walletStore.address) {
     throw new Error('Wallet not connected');
   }
 
   try {
-    // Create transaction record
     const txId = `tx-${Date.now()}`;
-
-    // Get source account
     const sourceAccount = await server.loadAccount(walletStore.address);
 
     const networkPassphrase = walletStore.network === 'testnet' 
       ? 'Test SDF Network ; September 2015' 
       : 'Public Global Stellar Network ; September 2015';
 
-    // Create transaction
     const transaction = new TransactionBuilder(sourceAccount, {
       fee: '100',
       networkPassphrase,
@@ -52,25 +52,28 @@ export async function sendXLMPayment(
           amount,
         }),
       )
+      .addOperation(
+        Operation.manageData({
+          name: 'contract_id',
+          value: contractId,
+        }),
+      )
       .setTimeout(30)
       .build();
 
     const transactionXDR = transaction.toEnvelope().toXDR('base64');
     const signedXDR = await walletStore.signTransaction(transactionXDR);
-
-    // Reconstruct transaction from signed XDR
     const signedTx = TransactionBuilder.fromXDR(signedXDR, networkPassphrase);
-
-    // Submit transaction
     const result = await server.submitTransaction(signedTx);
 
     const explorerUrl = getExplorerUrl(result.hash, walletStore.network);
     transactionStore.add({
       id: txId,
       status: 'confirmed',
-      description,
+      description: `${description} [Contract: ${contractId.slice(0, 8)}...]`,
       hash: result.hash,
       explorerUrl,
+      contractId,
     });
 
     return result;
@@ -87,6 +90,8 @@ export async function submitLicenseDraft(
 ) {
   const walletStore = useWalletStore.getState();
   const transactionStore = useTransactionStore.getState();
+  const config = getSorobanConfig(walletStore.network);
+  const contractId = config.registryContractId || 'CDBHJ72ROMTWZC6OIL6TDCUFH6VJOB4CSODT5H6S6DJCQQAJQHBHY6R7';
 
   if (!walletStore.connected || !walletStore.address) {
     throw new Error('Wallet not connected');
@@ -100,8 +105,8 @@ export async function submitLicenseDraft(
       : 'Public Global Stellar Network ; September 2015';
 
     const licenseKey = `license:${Date.now()}`;
-    const truncatedTitle = (licenseData.title || 'New License').slice(0, 32);
-    const licensePayload = `t:${truncatedTitle}|a:${licenseFee}`;
+    const truncatedTitle = (licenseData.title || 'New License').slice(0, 24);
+    const licensePayload = `c:${contractId.slice(0, 12)}|t:${truncatedTitle}|a:${licenseFee}`;
 
     const transaction = new TransactionBuilder(sourceAccount, {
       fee: '100',
@@ -120,6 +125,12 @@ export async function submitLicenseDraft(
           value: licensePayload,
         }),
       )
+      .addOperation(
+        Operation.manageData({
+          name: 'contract_id',
+          value: contractId,
+        }),
+      )
       .setTimeout(30)
       .build();
 
@@ -132,9 +143,10 @@ export async function submitLicenseDraft(
     transactionStore.add({
       id: txId,
       status: 'confirmed',
-      description: `License purchase: ${licenseData.title || 'New License'}`,
+      description: `License purchase on Contract [${contractId.slice(0, 8)}...]: ${licenseData.title || 'New License'}`,
       hash: result.hash,
       explorerUrl,
+      contractId,
     });
 
     return result;

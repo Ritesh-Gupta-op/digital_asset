@@ -6,6 +6,7 @@ export interface TransactionRecord {
   hash?: string;
   explorerUrl?: string;
   description: string;
+  contractId?: string;
 }
 
 interface TransactionState {

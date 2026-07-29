@@ -11,18 +11,22 @@ export interface SorobanConfig {
 
 export function getSorobanConfig(network: SorobanNetwork = 'testnet'): SorobanConfig {
   const horizonUrl = process.env.NEXT_PUBLIC_HORIZON_URL ?? 'https://horizon-testnet.stellar.org';
-  const registryContractId = process.env.NEXT_PUBLIC_CONTRACT_REGISTRY?.trim();
-  const routerContractId = process.env.NEXT_PUBLIC_CONTRACT_ROUTER?.trim();
-  const hasRealContractIds = Boolean(
-    registryContractId && routerContractId && !registryContractId.includes('CHANGE_ME') && !routerContractId.includes('CHANGE_ME'),
+  const registryEnv = process.env.NEXT_PUBLIC_CONTRACT_REGISTRY?.trim();
+  const routerEnv = process.env.NEXT_PUBLIC_CONTRACT_ROUTER?.trim();
+
+  const isConfiguredInEnv = Boolean(
+    registryEnv && routerEnv && !registryEnv.includes('CHANGE_ME') && !routerEnv.includes('CHANGE_ME'),
   );
+
+  const registryContractId = registryEnv || 'CDBHJ72ROMTWZC6OIL6TDCUFH6VJOB4CSODT5H6S6DJCQQAJQHBHY6R7';
+  const routerContractId = routerEnv || 'CDKY4A5PUKHBA43ZSIQHVCBH5EBV3JQAPWWC4SV6ZKPILFTVYEY4ECFB';
 
   return {
     network,
     horizonUrl,
     registryContractId,
     routerContractId,
-    isConfigured: hasRealContractIds,
-    mode: hasRealContractIds ? 'live' : 'preview',
+    isConfigured: isConfiguredInEnv,
+    mode: isConfiguredInEnv ? 'live' : 'preview',
   };
 }

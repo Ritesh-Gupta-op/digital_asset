@@ -143,8 +143,8 @@ export function WalletModal({ isOpen, onClose, onConnect, network, isConnecting 
 
             {signedXdr && (
               <div className="mt-3 rounded-md bg-white/5 p-3 text-xs text-slate-300">
-                <p className="font-semibold text-white">Signed XDR (truncated)</p>
-                <pre className="mt-2 max-h-48 overflow-auto text-xs">{signedXdr.slice(0, 800)}</pre>
+                <p className="font-semibold text-white">Signed XDR</p>
+                <pre className="mt-2 max-h-48 overflow-auto break-all whitespace-pre-wrap font-mono text-xs">{signedXdr}</pre>
               </div>
             )}
           </div>

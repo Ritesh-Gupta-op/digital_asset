@@ -5,8 +5,12 @@ Your one-click digital asset license generator for NFTs, smart contracts, and to
 ## Quick Links
 - **Live Demo**: [Vercel Deployment](https://digital-asset-xrme.vercel.app/)
 - **GitHub**: [Ritesh-Gupta-op/digital_asset](https://github.com/Ritesh-Gupta-op/digital_asset)
-- **Smart Contracts**: License Registry + Royalty Router on Stellar testnet
-- **Deployment TX**: `78bdb5db5f51ca76340ea3ad0d586da68606709e03ee35e4171aed96feaf4217`
+- **License Registry Contract**: [`CDBHJ72ROMTW...`](https://stellar.expert/explorer/testnet/contract/CDBHJ72ROMTWZC6OIL6TDCUFH6VJOB4CSODT5H6S6DJCQQAJQHBHY6R7)
+- **Royalty Router Contract**: [`CDKY4A5PUKHB...`](https://stellar.expert/explorer/testnet/contract/CDKY4A5PUKHBA43ZSIQHVCBH5EBV3JQAPWWC4SV6ZKPILFTVYEY4ECFB)
+- **Deployment Tx (Registry)**: [`e9505eb7cca9...`](https://stellar.expert/explorer/testnet/tx/e9505eb7cca987e911fc372c3409ab79245243b78d89453dda789a7d585fd791)
+- **Deployment Tx (Router)**: [`a15365dc55ee...`](https://stellar.expert/explorer/testnet/tx/a15365dc55ee5e1564289f58d19fcf11baef4bca37d189e75312801c50240cac)
+
+
 
 ## Product Overview
 Creators often rely on fragmented licensing tools, manual royalty tracking, and opaque approval flows. LicenseCraft consolidates licensing, wallet interactions, activity tracking, and transaction monitoring into a production-style operating layer on Stellar Soroban.
@@ -105,8 +109,8 @@ npm run dev
 ```env
 NEXT_PUBLIC_HORIZON_URL=https://horizon-testnet.stellar.org
 NEXT_PUBLIC_NETWORK=testnet
-NEXT_PUBLIC_CONTRACT_REGISTRY=CC... (deploy contract first)
-NEXT_PUBLIC_CONTRACT_ROUTER=CC... (deploy contract first)
+NEXT_PUBLIC_CONTRACT_REGISTRY=CDBHJ72ROMTWZC6OIL6TDCUFH6VJOB4CSODT5H6S6DJCQQAJQHBHY6R7
+NEXT_PUBLIC_CONTRACT_ROUTER=CDKY4A5PUKHBA43ZSIQHVCBH5EBV3JQAPWWC4SV6ZKPILFTVYEY4ECFB
 ```
 
 ## Testing
@@ -120,11 +124,32 @@ npm run test:watch   # Watch mode
 
 **Royalty Router**: Inter-contract communication pattern demonstrating Soroban's contract-to-contract calls with event emissions.
 
-## Deployment
-1. Build contracts: `cd contracts/license_registry && cargo build --target wasm32-unknown-unknown --release`
-2. Deploy to testnet using `soroban contract deploy`
-3. Update `.env.local` with contract addresses
-4. Deploy app: `vercel deploy`
+## Deployment & Contract Inspection
+
+### Viewing Smart Contract Deployments
+- **Deployment Transaction Explorer**: View on [Stellar Expert Testnet](https://stellar.expert/explorer/testnet/tx/78bdb5db5f51ca76340ea3ad0d586da68606709e03ee35e4171aed96feaf4217)
+- **Contract Address Format**: Soroban contracts are assigned a 56-character `C...` Contract ID (e.g. `https://stellar.expert/explorer/testnet/contract/<CDKY4A5PUKHBA43ZSIQHVCBH5EBV3JQAPWWC4SV6ZKPILFTVYEY4ECFB>`).
+
+### Deploying New Contracts
+1. **Build Wasm binary**:
+   ```bash
+   cd contracts/license_registry
+   cargo build --target wasm32-unknown-unknown --release
+   ```
+2. **Deploy to Stellar Testnet**:
+   ```bash
+   stellar contract deploy \
+     --wasm target/wasm32-unknown-unknown/release/license_registry.wasm \
+     --source <YOUR_IDENTITY> \
+     --network testnet
+   ```
+3. **Configure Frontend**: Copy the returned Contract ID into `.env.local`:
+   ```env
+   NEXT_PUBLIC_CONTRACT_REGISTRY=C...
+   NEXT_PUBLIC_CONTRACT_ROUTER=C...
+   ```
+4. **Deploy Web Application**: `vercel deploy`
+
 
 ## CI/CD Pipeline
 
