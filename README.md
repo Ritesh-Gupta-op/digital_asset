@@ -126,6 +126,11 @@ npm run test:watch   # Watch mode
 3. Update `.env.local` with contract addresses
 4. Deploy app: `vercel deploy`
 
+## CI/CD Pipeline
+The repository includes GitHub Actions workflows for automated checks and deployment:
+- `pr-checks.yml`: runs on every pull request to `main`, installs dependencies, and runs `npm run test`
+- `deploy.yml`: runs on push to `main`, installs dependencies, runs `npm run build`, and contains a placeholder deployment step for hosting provider integration
+
 ## Security
 - Authenticated contract entry points
 - Input validation for terms hashes and royalty values
