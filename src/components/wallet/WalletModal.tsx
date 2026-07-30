@@ -41,25 +41,25 @@ export function WalletModal({ isOpen, onClose, onConnect, network, isConnecting 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="relative w-full max-w-md rounded-2xl border border-white/10 bg-gradient-to-b from-slate-900 to-slate-950 p-6 shadow-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-md">
+      <div className="relative w-full max-w-md rounded-2xl border border-white/10 bg-gradient-to-b from-zinc-900 to-black p-6 shadow-2xl">
         <button
           onClick={onClose}
-          className="absolute right-4 top-4 text-slate-400 transition hover:text-white"
+          className="absolute right-4 top-4 text-zinc-400 transition hover:text-white"
         >
           ✕
         </button>
 
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-white">Connect Wallet</h2>
-          <p className="mt-2 text-sm text-slate-400">Choose a wallet to connect to {network}</p>
+          <h2 className="text-2xl font-bold font-manrope text-white">Connect Wallet</h2>
+          <p className="mt-2 text-sm text-zinc-400">Choose a wallet to connect to {network}</p>
         </div>
 
         {error && (
-          <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/10 p-4">
-            <p className="text-sm text-red-300 mb-3">{error}</p>
-            <p className="text-xs text-red-200">
-              <strong>Need help?</strong> Install <a href="https://www.freighter.app/" target="_blank" rel="noopener noreferrer" className="underline hover:text-red-100">Freighter Wallet</a> extension
+          <div className="mb-4 rounded-xl border border-[#ef233c]/30 bg-[#ef233c]/10 p-4">
+            <p className="text-sm text-red-200 mb-3">{error}</p>
+            <p className="text-xs text-red-300">
+              <strong>Need help?</strong> Install <a href="https://www.freighter.app/" target="_blank" rel="noopener noreferrer" className="underline hover:text-white">Freighter Wallet</a> extension
             </p>
           </div>
         )}
@@ -68,10 +68,10 @@ export function WalletModal({ isOpen, onClose, onConnect, network, isConnecting 
           <div className="space-y-4">
             <div className="rounded-2xl border border-white/10 bg-white/5 p-6 text-center">
               <div className="mb-4 flex justify-center">
-                <div className="h-12 w-12 animate-spin rounded-full border-4 border-brand-600/30 border-t-brand-600" />
+                <div className="h-12 w-12 animate-spin rounded-full border-4 border-[#ef233c]/30 border-t-[#ef233c]" />
               </div>
               <p className="font-medium text-white">Connecting to {wallets.find(w => w.id === selectedWallet)?.name}</p>
-              <p className="mt-2 text-sm text-slate-400">Check your wallet extension for a connection request</p>
+              <p className="mt-2 text-sm text-zinc-400">Check your wallet extension for a connection request</p>
             </div>
           </div>
         ) : (
@@ -81,7 +81,7 @@ export function WalletModal({ isOpen, onClose, onConnect, network, isConnecting 
                 key={wallet.id}
                 onClick={() => handleConnectClick(wallet.id)}
                 disabled={isConnecting}
-                className="group rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-brand-500/50 hover:bg-brand-500/10 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="group rounded-xl border border-white/10 bg-white/5 p-4 transition hover:border-[#ef233c]/50 hover:bg-[#ef233c]/10 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <div className="text-2xl mb-2">{wallet.icon}</div>
                 <p className="text-sm font-medium text-white">{wallet.name}</p>
@@ -92,7 +92,7 @@ export function WalletModal({ isOpen, onClose, onConnect, network, isConnecting 
 
         {connected && address && (
           <div className="mt-4 rounded-2xl border border-white/10 bg-white/5 p-4">
-            <p className="text-sm text-slate-300">Connected as</p>
+            <p className="text-sm text-zinc-400">Connected as</p>
             <p className="font-mono mt-1 break-all text-sm text-white">{address}</p>
 
             <div className="mt-4 flex items-center gap-2">
@@ -126,7 +126,7 @@ export function WalletModal({ isOpen, onClose, onConnect, network, isConnecting 
                     setError(errorMessage);
                   }
                 }}
-                className="rounded-full bg-cyan-500 px-4 py-2 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400"
+                className="rounded-full bg-[#ef233c] hover:bg-red-700 px-4 py-2 text-xs font-bold text-white transition shadow-glow-sm uppercase tracking-wider"
               >
                 Request Signature
               </button>
@@ -135,14 +135,14 @@ export function WalletModal({ isOpen, onClose, onConnect, network, isConnecting 
                 onClick={() => {
                   setSignedXdr(null);
                 }}
-                className="rounded-full border border-white/10 px-3 py-2 text-sm text-white"
+                className="rounded-full border border-white/10 px-3 py-2 text-xs text-zinc-400 hover:text-white"
               >
                 Clear
               </button>
             </div>
 
             {signedXdr && (
-              <div className="mt-3 rounded-md bg-white/5 p-3 text-xs text-slate-300">
+              <div className="mt-3 rounded-md bg-white/5 p-3 text-xs text-zinc-300">
                 <p className="font-semibold text-white">Signed XDR</p>
                 <pre className="mt-2 max-h-48 overflow-auto break-all whitespace-pre-wrap font-mono text-xs">{signedXdr}</pre>
               </div>
@@ -151,10 +151,10 @@ export function WalletModal({ isOpen, onClose, onConnect, network, isConnecting 
         )}
 
         <div className="mt-6 rounded-xl border border-white/10 bg-white/5 p-4">
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-zinc-400">
             <span className="font-semibold text-white">Network:</span> {network === 'testnet' ? 'Stellar Testnet' : 'Stellar Mainnet'}
           </p>
-          <p className="mt-2 text-xs text-slate-400">
+          <p className="mt-2 text-xs text-zinc-400">
             <span className="font-semibold text-white">Status:</span> Real XLM transactions. You will spend actual XLM from your wallet.
           </p>
         </div>

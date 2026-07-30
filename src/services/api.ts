@@ -105,6 +105,13 @@ export function apiCreateLicense(data: {
   });
 }
 
+export function apiUpdateLicense(id: string, updates: Partial<ApiLicense>) {
+  return apiFetch<{ license: ApiLicense }>(`/api/licenses/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(updates),
+  });
+}
+
 // ── Analytics ──────────────────────────────────────────────────────────
 
 export function apiGetAnalytics() {

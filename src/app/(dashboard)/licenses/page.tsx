@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { apiGetLicenses, apiCreateLicense, ApiLicense } from '@/services/api';
 import { useWalletStore } from '@/store/wallet';
 import { Skeleton, TableRowSkeleton } from '@/components/ui/skeleton';
@@ -60,24 +61,25 @@ export default function LicensesPage() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-950 text-slate-100">
+    <main className="min-h-screen bg-black text-white font-inter">
       <div className="mx-auto max-w-7xl px-6 py-10 sm:px-8 lg:px-10">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <span className="inline-flex rounded-full bg-cyan-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.35em] text-cyan-400">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-semibold uppercase tracking-[0.25em] text-red-400 font-manrope">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#ef233c]" />
               License Registry API
-            </span>
-            <h1 className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl text-white">
+            </div>
+            <h1 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl text-white font-manrope">
               Digital License Management
             </h1>
-            <p className="mt-1 text-sm text-slate-400">
+            <p className="mt-1 text-sm text-zinc-400">
               Create, inspect, and manage digital asset licenses persisted on-chain and backend API.
             </p>
           </div>
 
           <button
             onClick={fetchLicenses}
-            className="rounded-full border border-slate-800 bg-slate-900 px-4 py-2 text-xs font-semibold text-slate-300 transition hover:bg-slate-800"
+            className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold text-zinc-300 transition hover:bg-white/10 hover:text-white"
           >
             🔄 Refresh
           </button>
@@ -85,15 +87,15 @@ export default function LicensesPage() {
 
         <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_1.8fr]">
           {/* Create License Form */}
-          <div className="rounded-[32px] border border-slate-800 bg-slate-900/60 p-6 backdrop-blur-xl">
-            <h2 className="text-xl font-bold text-white">Issue New License</h2>
-            <p className="mt-1 text-xs text-slate-400">
+          <div className="rounded-[32px] border border-white/10 bg-gradient-to-b from-zinc-900/60 to-black p-6 backdrop-blur-xl">
+            <h2 className="text-xl font-bold text-white font-manrope">Issue New License</h2>
+            <p className="mt-1 text-xs text-zinc-400">
               Draft license terms and register contract metadata.
             </p>
 
             <form onSubmit={handleCreateLicense} className="mt-6 space-y-4">
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1">
                   License Title
                 </label>
                 <input
@@ -102,12 +104,12 @@ export default function LicensesPage() {
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g. NFT Commercial Rights v1"
                   required
-                  className="w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none"
+                  className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-zinc-500 focus:border-[#ef233c] focus:outline-none transition-colors"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1">
                   Royalty / License Fee (XLM)
                 </label>
                 <input
@@ -115,12 +117,12 @@ export default function LicensesPage() {
                   step="0.0001"
                   value={fee}
                   onChange={(e) => setFee(e.target.value)}
-                  className="w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none"
+                  className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-zinc-500 focus:border-[#ef233c] focus:outline-none transition-colors"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1">
                   Terms & Conditions
                 </label>
                 <textarea
@@ -128,14 +130,14 @@ export default function LicensesPage() {
                   value={terms}
                   onChange={(e) => setTerms(e.target.value)}
                   placeholder="Granted commercial usage rights, token ID metadata..."
-                  className="w-full rounded-2xl border border-slate-800 bg-slate-950 px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-cyan-500 focus:outline-none resize-none"
+                  className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-zinc-500 focus:border-[#ef233c] focus:outline-none resize-none transition-colors"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full rounded-full bg-cyan-500 py-3 text-sm font-semibold text-slate-950 shadow-glow transition hover:bg-cyan-400 disabled:opacity-50"
+                className="w-full rounded-full bg-[#ef233c] hover:bg-red-700 py-3.5 text-xs font-bold text-white shadow-glow-sm transition-all disabled:opacity-50 font-manrope uppercase tracking-wider"
               >
                 {submitting ? 'Creating License…' : 'Create License Draft'}
               </button>
@@ -144,7 +146,7 @@ export default function LicensesPage() {
 
           {/* Licenses List */}
           <div className="space-y-4">
-            <h2 className="text-xl font-bold text-white">Registered Licenses</h2>
+            <h2 className="text-xl font-bold text-white font-manrope">Registered Licenses</h2>
 
             {loading ? (
               <div className="space-y-3">
@@ -155,38 +157,52 @@ export default function LicensesPage() {
             ) : error ? (
               <ErrorCard message={error} retry={fetchLicenses} />
             ) : licenses.length === 0 ? (
-              <div className="rounded-[28px] border border-dashed border-slate-800 p-8 text-center text-sm text-slate-500">
+              <div className="rounded-[28px] border border-dashed border-white/10 p-8 text-center text-sm text-zinc-500">
                 No licenses registered yet. Create your first license draft above.
               </div>
             ) : (
               licenses.map((lic) => (
                 <div
                   key={lic.id}
-                  className="rounded-[28px] border border-slate-800 bg-slate-900/60 p-5 shadow-sm transition hover:border-slate-700"
+                  className="rounded-[24px] border border-white/10 bg-zinc-900/50 p-5 shadow-sm transition hover:border-white/20"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-white">{lic.title}</span>
-                        <span className="rounded-full bg-cyan-500/10 px-2.5 py-0.5 text-[10px] font-semibold text-cyan-400 uppercase tracking-wider">
+                        <span className="font-bold text-white font-manrope">{lic.title}</span>
+                        <span className="rounded-full bg-[#ef233c]/10 px-2.5 py-0.5 text-[10px] font-bold text-red-400 border border-[#ef233c]/20 uppercase tracking-wider">
                           {lic.status}
                         </span>
                       </div>
-                      <p className="mt-1 text-xs text-slate-400 line-clamp-2">
+                      <p className="mt-1 text-xs text-zinc-400 line-clamp-2">
                         {lic.terms || 'Standard licensing terms apply.'}
                       </p>
                     </div>
 
                     {lic.amount && (
-                      <span className="rounded-2xl bg-slate-800 px-3 py-1 text-xs font-semibold text-slate-200">
+                      <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-bold text-zinc-200 font-mono">
                         {lic.amount} XLM
                       </span>
                     )}
                   </div>
 
-                  <div className="mt-4 flex flex-wrap items-center justify-between text-xs text-slate-500 border-t border-slate-800/60 pt-3">
-                    <span>Contract: {lic.contractId?.slice(0, 10)}...</span>
-                    <span>Created: {new Date(lic.createdAt).toLocaleDateString()}</span>
+                  <div className="mt-4 flex flex-wrap items-center justify-between text-xs text-zinc-500 border-t border-white/5 pt-3 gap-2">
+                    <span className="font-mono">Contract: {lic.contractId?.slice(0, 10)}...</span>
+                    <div className="flex items-center gap-3">
+                      <span>Created: {new Date(lic.createdAt).toLocaleDateString()}</span>
+                      {lic.status === 'active' ? (
+                        <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full uppercase tracking-wider">
+                          ✓ Funded
+                        </span>
+                      ) : (
+                        <Link
+                          href={`/transactions?licenseId=${lic.id}&title=${encodeURIComponent(lic.title)}&amount=${lic.amount || '10'}&owner=${encodeURIComponent(lic.ownerAddress || '')}&terms=${encodeURIComponent(lic.terms || '')}`}
+                          className="inline-flex items-center gap-1 text-xs font-bold text-white bg-[#ef233c] hover:bg-red-700 px-3 py-1 rounded-full transition-all shadow-glow-sm font-manrope"
+                        >
+                          💳 Fund in Transactions →
+                        </Link>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))

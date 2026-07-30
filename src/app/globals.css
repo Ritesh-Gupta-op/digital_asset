@@ -2,34 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Red Noir Design System ─────────────────────────────────────────── */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Manrope:wght@200;400;600;700;800&display=swap');
+
 :root {
-  color-scheme: light;
-  --bg: #f8fbff;
-  --surface: rgba(255, 255, 255, 0.92);
-  --text: #020617;
-  --muted: #475569;
-  --border: rgba(14, 165, 233, 0.16);
-  --card: rgba(255, 255, 255, 0.96);
-  --accent: #0ea5e9;
-  --accent-soft: rgba(14, 165, 233, 0.14);
+  --accent-red: #ef233c;
+  --accent-red-glow: rgba(239, 35, 60, 0.4);
+  --bg: #000000;
+  --surface: rgba(255,255,255,0.03);
+  --border: rgba(255,255,255,0.08);
+  --text: #ffffff;
+  --muted: #71717a;
 }
 
-html.dark {
-  color-scheme: dark;
-  --bg: #050911;
-  --surface: rgba(7, 20, 35, 0.92);
-  --text: #eff6ff;
-  --muted: #94a3b8;
-  --border: rgba(255, 255, 255, 0.08);
-  --card: rgba(10, 20, 40, 0.95);
-  --accent: #38bdf8;
-  --accent-soft: rgba(56, 189, 248, 0.14);
-}
-
+/* Reset to dark-always for Red Noir */
 body {
-  @apply min-h-screen antialiased;
-  background: var(--bg);
-  color: var(--text);
+  @apply min-h-screen antialiased bg-black text-white;
+  font-family: 'Inter', sans-serif;
 }
 
 * {
@@ -37,33 +27,137 @@ body {
 }
 
 ::selection {
-  background: rgba(56, 189, 248, 0.35);
-  color: var(--text);
+  background: #ef233c;
+  color: white;
 }
 
-.theme-surface {
-  background: var(--card);
-  color: var(--text);
-  border-color: var(--border);
+/* ── Shiny CTA Button ───────────────────────────────────────────────── */
+@property --gradient-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
 }
 
-.theme-muted {
-  color: var(--muted);
+@keyframes border-spin {
+  from { --gradient-angle: 0deg; }
+  to   { --gradient-angle: 360deg; }
 }
 
-.theme-accent {
-  color: var(--accent);
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-.theme-accent-bg {
-  background: var(--accent-soft);
+@keyframes animStar {
+  from { transform: translateY(0px); }
+  to   { transform: translateY(-2000px); }
 }
 
-.card-soft {
-  background: var(--card);
-  border: 1px solid var(--border);
+.animate-fade-up {
+  animation: fade-in-up 0.8s ease-out forwards;
 }
 
-.shadow-soft {
-  box-shadow: 0 18px 60px rgba(7, 20, 35, 0.22);
+.shiny-cta {
+  --gradient-angle: 0deg;
+  position: relative;
+  overflow: hidden;
+  border-radius: 9999px;
+  padding: 0.875rem 2rem;
+  background:
+    linear-gradient(#000, #000) padding-box,
+    conic-gradient(from var(--gradient-angle), transparent 0%, #ef233c 10%, #ef233c 30%, transparent 45%) border-box;
+  border: 2px solid transparent;
+  cursor: pointer;
+  isolation: isolate;
+  animation: border-spin 2.5s linear infinite;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.shiny-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 35px rgba(239, 35, 60, 0.35);
+}
+
+.shiny-cta:active {
+  transform: scale(0.97);
+}
+
+/* ── Parallax Stars ─────────────────────────────────────────────────── */
+.stars-1 {
+  box-shadow:
+    234px 124px #fff, 654px 345px #fff, 876px 12px #fff,
+    1200px 800px #fff, 400px 1500px #fff, 1800px 200px #fff,
+    100px 1000px #fff, 900px 1900px #fff, 500px 600px #fff,
+    1400px 100px #fff, 300px 400px #fff, 1600px 1200px #fff,
+    50px 750px #fff,  1100px 550px #fff, 750px 1400px #fff;
+  animation: animStar 50s linear infinite;
+}
+
+.stars-2 {
+  box-shadow:
+    123px 456px #fff, 789px 234px #fff, 456px 890px #fff,
+    1100px 300px #fff, 200px 1200px #fff, 1500px 500px #fff,
+    600px 1700px #fff, 1300px 900px #fff;
+  animation: animStar 80s linear infinite;
+}
+
+/* ── Gradient Blur Header ───────────────────────────────────────────── */
+.gradient-blur {
+  position: fixed;
+  z-index: 40;
+  inset: 0 0 auto 0;
+  height: 100px;
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.85), transparent);
+  -webkit-mask-image: linear-gradient(to bottom, black, transparent);
+  mask-image: linear-gradient(to bottom, black, transparent);
+}
+
+/* ── Noise Grid Overlay ─────────────────────────────────────────────── */
+.grid-overlay {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
+  mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
+}
+
+/* ── Typography Stroke ──────────────────────────────────────────────── */
+.text-stroke {
+  -webkit-text-stroke: 1px rgba(255,255,255,0.1);
+  color: transparent;
+}
+
+/* ── Card Hover ─────────────────────────────────────────────────────── */
+.noir-card {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.noir-card:hover {
+  border-color: rgba(255,255,255,0.16);
+  transform: translateY(-2px);
+}
+
+/* ── Input Focus ────────────────────────────────────────────────────── */
+.noir-input {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: white;
+  border-radius: 9999px;
+  padding: 0.75rem 1.25rem;
+  transition: border-color 0.2s ease;
+}
+
+.noir-input:focus {
+  outline: none;
+  border-color: #ef233c;
+  box-shadow: 0 0 0 3px rgba(239,35,60,0.15);
+}
+
+.noir-input::placeholder {
+  color: #52525b;
 }

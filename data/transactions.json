@@ -1,0 +1,24 @@
+[
+  {
+    "id": "license-1785381394574",
+    "hash": "fe72604a68f848b2f644120a5135c5ab729a0bc684fbceb3be9ff489cb55dae8",
+    "status": "confirmed",
+    "description": "License: lol [Contract: CDBHJ72R...]",
+    "contractId": "CDBHJ72ROMTWZC6OIL6TDCUFH6VJOB4CSODT5H6S6DJCQQAJQHBHY6R7",
+    "explorerUrl": "https://stellar.expert/explorer/testnet/tx/fe72604a68f848b2f644120a5135c5ab729a0bc684fbceb3be9ff489cb55dae8",
+    "amount": "10",
+    "from": "GDFSDPEEBZYQVG5JPPTJUOH4FID4M5XV45BKTWCIEIRYMCWJ6DQADBMB",
+    "createdAt": "2026-07-30T03:16:49.635Z"
+  },
+  {
+    "id": "license-1785380914693",
+    "hash": "80b9b27603ee861c7b997eb03381b7646158e97568342592151bb16815daae07",
+    "status": "confirmed",
+    "description": "License: Creator license purchase [Contract: CDBHJ72R...]",
+    "contractId": "CDBHJ72ROMTWZC6OIL6TDCUFH6VJOB4CSODT5H6S6DJCQQAJQHBHY6R7",
+    "explorerUrl": "https://stellar.expert/explorer/testnet/tx/80b9b27603ee861c7b997eb03381b7646158e97568342592151bb16815daae07",
+    "amount": "0.0001",
+    "from": "GDFSDPEEBZYQVG5JPPTJUOH4FID4M5XV45BKTWCIEIRYMCWJ6DQADBMB",
+    "createdAt": "2026-07-30T03:08:43.004Z"
+  }
+]

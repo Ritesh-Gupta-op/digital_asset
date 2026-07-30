@@ -4,22 +4,20 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useWalletStore } from '@/store/wallet';
-import { useTheme } from '@/components/ThemeProvider';
 import { WalletModal } from '@/components/wallet/WalletModal';
 
 const nav = [
-  { href: '/dashboard' as const, label: 'Dashboard' },
-  { href: '/licenses' as const, label: 'Licenses' },
-  { href: '/transactions' as const, label: 'Transactions' },
-  { href: '/analytics' as const, label: 'Analytics' },
-  { href: '/activity' as const, label: 'Activity' },
-  { href: '/settings' as const, label: 'Settings' },
+  { href: '/dashboard',     label: 'Dashboard' },
+  { href: '/licenses',      label: 'Licenses' },
+  { href: '/transactions',  label: 'Transactions' },
+  { href: '/analytics',     label: 'Analytics' },
+  { href: '/activity',      label: 'Activity' },
+  { href: '/settings',      label: 'Settings' },
 ];
 
 export function Shell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [walletModalOpen, setWalletModalOpen] = useState(false);
-  const { theme, toggleTheme } = useTheme();
   const { connected, address, disconnect, network, setNetwork, status, connect } = useWalletStore();
 
   const handleConnectWallet = async (walletType: string) => {
@@ -33,84 +31,74 @@ export function Shell({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <div className="min-h-screen bg-slate-950 text-slate-100">
-        <header className="sticky top-0 z-40 border-b border-white/10 bg-slate-950/80 backdrop-blur-xl">
-          <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6 py-4 lg:px-8">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-500 to-sky-500 shadow-glow">
-                <span className="text-lg font-bold text-white">L</span>
-              </div>
-              <div>
-                <p className="text-sm font-bold uppercase tracking-[0.4em] text-white">LicenseCraft</p>
-                <p className="text-xs text-slate-400">License OS</p>
-              </div>
-            </div>
+      {/* Global Red Noir background */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <div className="absolute inset-0 bg-gradient-to-b from-[#110202] to-black" />
+        <div className="absolute top-0 left-0 w-px h-px bg-transparent stars-1" />
+        <div className="absolute top-0 left-0 w-[2px] h-[2px] bg-transparent stars-2" />
+        <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-red-900/5 rounded-full blur-[100px]" />
+        <div className="absolute inset-0 grid-overlay opacity-50" />
+      </div>
 
-            <nav className="hidden items-center gap-1 rounded-full border border-white/10 bg-slate-900/70 p-1 md:flex">
+      <div className="gradient-blur" />
+
+      <div className="relative z-10 min-h-screen text-white">
+        {/* ── Top Nav ──────────────────────────────────── */}
+        <header className="fixed top-0 left-0 w-full z-50 pt-4 px-4">
+          <nav className="max-w-7xl mx-auto flex items-center justify-between bg-black/60 backdrop-blur-xl border border-white/10 rounded-full px-5 py-2.5 shadow-2xl">
+            {/* Logo */}
+            <Link href="/" className="flex items-center gap-2 shrink-0">
+              <div className="w-5 h-5 bg-[#ef233c] rounded-sm rotate-45 shadow-glow-sm" />
+              <div>
+                <p className="text-sm font-bold font-manrope tracking-tight text-white">LicenseCraft</p>
+                <p className="text-[10px] text-zinc-500 leading-none">License OS</p>
+              </div>
+            </Link>
+
+            {/* Nav Links */}
+            <div className="hidden md:flex items-center gap-0.5 rounded-full border border-white/10 bg-black/40 p-1">
               {nav.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+                  className={`rounded-full px-4 py-1.5 text-xs font-semibold transition-all ${
                     pathname === item.href
-                      ? 'bg-gradient-to-r from-cyan-500 to-sky-500 text-white shadow-lg shadow-cyan-500/20'
-                      : 'text-slate-300 hover:bg-white/10'
+                      ? 'bg-[#ef233c] text-white shadow-glow-sm'
+                      : 'text-zinc-400 hover:text-white hover:bg-white/5'
                   }`}
                 >
                   {item.label}
                 </Link>
               ))}
-            </nav>
+            </div>
 
+            {/* Right Controls */}
             <div className="flex items-center gap-2">
-              <div className="hidden items-center gap-1 rounded-full border border-white/10 bg-slate-900/70 p-1 sm:flex">
-                <button
-                  className={`rounded-full px-3 py-1.5 text-xs font-medium transition ${
-                    network === 'testnet'
-                      ? 'bg-slate-800 text-white'
-                      : 'text-slate-300 hover:bg-slate-800/70'
-                  }`}
-                  onClick={() => setNetwork('testnet')}
-                >
-                  Testnet
-                </button>
-                <button
-                  className={`rounded-full px-3 py-1.5 text-xs font-medium transition ${
-                    network === 'mainnet'
-                      ? 'bg-slate-800 text-white'
-                      : 'text-slate-300 hover:bg-slate-800/70'
-                  }`}
-                  onClick={() => setNetwork('mainnet')}
-                >
-                  Mainnet
-                </button>
+              {/* Network Toggle */}
+              <div className="hidden sm:flex items-center gap-0.5 rounded-full border border-white/10 bg-black/40 p-1">
+                {(['testnet', 'mainnet'] as const).map((net) => (
+                  <button
+                    key={net}
+                    onClick={() => setNetwork(net)}
+                    className={`rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider transition-all ${
+                      network === net
+                        ? 'bg-white/10 text-white'
+                        : 'text-zinc-500 hover:text-zinc-300'
+                    }`}
+                  >
+                    {net}
+                  </button>
+                ))}
               </div>
 
-              <button
-                onClick={toggleTheme}
-                className="hidden rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-slate-200 transition hover:bg-white/10 hover:border-white/20 sm:inline-flex items-center gap-2 active:scale-[0.95]"
-                title="Toggle theme"
-              >
-                {theme === 'dark' ? (
-                  <>
-                    <span>☀️</span>
-                    <span>Light</span>
-                  </>
-                ) : (
-                  <>
-                    <span>🌙</span>
-                    <span>Dark</span>
-                  </>
-                )}
-              </button>
-
+              {/* Wallet */}
               {connected ? (
-                <div className="flex items-center gap-2 rounded-full border border-cyan-500/20 bg-cyan-500/10 px-4 py-2">
-                  <span className="h-2 w-2 rounded-full bg-cyan-400 animate-pulse" />
-                  <span className="text-sm font-semibold text-white">{address?.slice(0, 8)}</span>
+                <div className="flex items-center gap-2 rounded-full border border-[#ef233c]/30 bg-[#ef233c]/10 px-4 py-2">
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#ef233c] animate-pulse" />
+                  <span className="text-xs font-bold text-white font-manrope">{address?.slice(0, 8)}…</span>
                   <button
-                    className="ml-1 rounded-full border border-white/10 bg-slate-900 px-2 py-1 text-xs text-slate-100 transition hover:bg-slate-800"
                     onClick={disconnect}
+                    className="ml-1 rounded-full border border-white/10 bg-black/40 px-2 py-0.5 text-[10px] text-zinc-300 hover:text-white transition-colors"
                   >
                     ✕
                   </button>
@@ -118,16 +106,24 @@ export function Shell({ children }: { children: React.ReactNode }) {
               ) : (
                 <button
                   onClick={() => setWalletModalOpen(true)}
-                  className="rounded-full bg-cyan-500 px-5 py-2 text-sm font-semibold text-slate-950 shadow-glow transition hover:bg-cyan-400 active:scale-[0.97]"
+                  className="group relative inline-flex items-center justify-center overflow-hidden rounded-full px-5 py-2 transition-transform active:scale-95"
                 >
-                  {status === 'connecting' ? 'Connecting…' : 'Connect Wallet'}
+                  <span className="absolute inset-0 border border-white/10 rounded-full" />
+                  <span className="absolute inset-[-100%] animate-[spin_3s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,transparent_75%,#ef233c_100%)] opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <span className="absolute inset-[1px] rounded-full bg-black" />
+                  <span className="relative z-10 text-[10px] font-bold uppercase tracking-wider text-white">
+                    {status === 'connecting' ? 'Connecting…' : 'Connect Wallet'}
+                  </span>
                 </button>
               )}
             </div>
-          </div>
+          </nav>
         </header>
-        <main>{children}</main>
+
+        {/* ── Page Content ─────────────────────────────── */}
+        <main className="pt-20">{children}</main>
       </div>
+
       <WalletModal
         isOpen={walletModalOpen}
         onClose={() => setWalletModalOpen(false)}
