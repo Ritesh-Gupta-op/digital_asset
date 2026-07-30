@@ -122,7 +122,7 @@ User → Next.js Frontend → Stellar Wallets Kit
 
 
 ### Mobile Responsive Design
-<img width="720" height="1600" alt="WhatsApp Image 2026-07-27 at 13 50 50" src="https://github.com/user-attachments/assets/4e68e3fc-79cb-4f70-8875-956ece786a4b" />
+<img width="720" height="1600" alt="WhatsApp Image 2026-07-30 at 09 13 31" src="https://github.com/user-attachments/assets/fca85848-d15d-40c4-95d4-30d0688ad50b" />
 
 
 ### Analytics & Transaction Monitoring
