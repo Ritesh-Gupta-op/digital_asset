@@ -35,7 +35,7 @@ Your one-click digital asset license generator for NFTs, smart contracts, and to
 
 ## Quick Links
 - **Live Demo**: [Vercel Deployment](https://digital-asset-xrme.vercel.app/)
-- **Demo Video**: [YouTube Video](https://youtu.be/nJBHV42PgOs)
+- **Demo Video**: [YouTube Video](https://youtu.be/nwuml1r_lx4)
 - **GitHub Repository**: [Ritesh-Gupta-op/digital_asset](https://github.com/Ritesh-Gupta-op/digital_asset)
 - **License Registry Contract**: [`CDBHJ72ROMTW...`](https://stellar.expert/explorer/testnet/contract/CDBHJ72ROMTWZC6OIL6TDCUFH6VJOB4CSODT5H6S6DJCQQAJQHBHY6R7)
 - **Royalty Router Contract**: [`CDKY4A5PUKHB...`](https://stellar.expert/explorer/testnet/contract/CDKY4A5PUKHBA43ZSIQHVCBH5EBV3JQAPWWC4SV6ZKPILFTVYEY4ECFB)
