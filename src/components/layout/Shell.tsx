@@ -13,7 +13,7 @@ const nav = [
   { href: '/analytics',     label: 'Analytics' },
   { href: '/activity',      label: 'Activity' },
   { href: '/settings',      label: 'Settings' },
-];
+] as const;
 
 export function Shell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();

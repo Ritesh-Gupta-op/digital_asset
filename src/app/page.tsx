@@ -318,8 +318,13 @@ export default function HomePage() {
           <div>
             <h4 className="text-xs font-bold text-[#ef233c] uppercase tracking-widest mb-6">Platform</h4>
             <ul className="space-y-4 text-zinc-400 text-sm">
-              {['Dashboard','Licenses','Transactions','Analytics'].map(item => (
-                <li key={item}><Link href={`/${item.toLowerCase()}`} className="hover:text-white transition-colors">{item}</Link></li>
+              {[
+                { name: 'Dashboard', href: '/dashboard' },
+                { name: 'Licenses', href: '/licenses' },
+                { name: 'Transactions', href: '/transactions' },
+                { name: 'Analytics', href: '/analytics' },
+              ].map(item => (
+                <li key={item.name}><Link href={item.href as any} className="hover:text-white transition-colors">{item.name}</Link></li>
               ))}
             </ul>
           </div>

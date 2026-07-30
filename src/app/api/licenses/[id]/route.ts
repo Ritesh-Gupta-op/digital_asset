@@ -3,11 +3,12 @@ import { updateLicenseRecord } from '@/lib/db';
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await req.json();
-    const updated = await updateLicenseRecord(params.id, body);
+    const updated = await updateLicenseRecord(id, body);
     if (!updated) {
       return NextResponse.json({ error: 'License not found' }, { status: 404 });
     }

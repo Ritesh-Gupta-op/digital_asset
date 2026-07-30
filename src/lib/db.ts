@@ -1,4 +1,3 @@
-import Database from 'better-sqlite3';
 import path from 'path';
 import fs from 'fs';
 import os from 'os';
@@ -7,20 +6,59 @@ const DATA_DIR = process.env.NODE_ENV === 'production'
   ? path.join(os.tmpdir(), 'licensecraft')
   : path.join(process.cwd(), 'data');
 
-if (!fs.existsSync(DATA_DIR)) {
-  fs.mkdirSync(DATA_DIR, { recursive: true });
+function ensureDataDir() {
+  try {
+    if (!fs.existsSync(DATA_DIR)) {
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+    }
+  } catch (err) {
+    console.warn('Failed to create DATA_DIR:', err);
+  }
 }
 
-const DB_PATH = path.join(DATA_DIR, 'licensecraft.db');
+// ── Fallback In-Memory / File Store ─────────────────────────────────────
+const memoryStore = {
+  transactions: [] as TxRecord[],
+  licenses: [] as LicenseRecord[],
+};
 
-let dbInstance: Database.Database | null = null;
+function readJSONFallback<T>(filename: string, fallback: T): T {
+  ensureDataDir();
+  const filepath = path.join(DATA_DIR, filename);
+  try {
+    if (fs.existsSync(filepath)) {
+      const raw = fs.readFileSync(filepath, 'utf-8');
+      return JSON.parse(raw) as T;
+    }
+  } catch {}
+  return fallback;
+}
 
-function getDb(): Database.Database {
-  if (!dbInstance) {
-    dbInstance = new Database(DB_PATH);
-    dbInstance.pragma('journal_mode = WAL');
+function writeJSONFallback<T>(filename: string, data: T): void {
+  ensureDataDir();
+  const filepath = path.join(DATA_DIR, filename);
+  try {
+    fs.writeFileSync(filepath, JSON.stringify(data, null, 2), 'utf-8');
+  } catch {}
+}
 
-    dbInstance.exec(`
+// ── SQLite Engine Singleton ─────────────────────────────────────────────
+let dbInstance: any = null;
+let sqliteAvailable: boolean | null = null;
+
+function getDb(): any {
+  if (sqliteAvailable === false) return null;
+  if (dbInstance) return dbInstance;
+
+  try {
+    ensureDataDir();
+    const DB_PATH = path.join(DATA_DIR, 'licensecraft.db');
+    // Dynamically require better-sqlite3 so serverless/Vercel environments without native C++ bindings don't crash at build/startup time
+    const Database = require('better-sqlite3');
+    const db = new Database(DB_PATH);
+    db.pragma('journal_mode = WAL');
+
+    db.exec(`
       CREATE TABLE IF NOT EXISTS transactions (
         id TEXT PRIMARY KEY,
         hash TEXT UNIQUE,
@@ -47,12 +85,19 @@ function getDb(): Database.Database {
       );
     `);
 
+    dbInstance = db;
+    sqliteAvailable = true;
     seedFromJSON(dbInstance);
+    return dbInstance;
+  } catch (err) {
+    console.warn('SQLite unavailable, using fallback storage engine:', err);
+    sqliteAvailable = false;
+    dbInstance = null;
+    return null;
   }
-  return dbInstance;
 }
 
-function seedFromJSON(db: Database.Database) {
+function seedFromJSON(db: any) {
   try {
     const txJsonPath = path.join(DATA_DIR, 'transactions.json');
     if (fs.existsSync(txJsonPath)) {
@@ -127,62 +172,87 @@ export interface TxRecord {
 
 export async function getTxRecords(): Promise<TxRecord[]> {
   const db = getDb();
-  const rows = db.prepare('SELECT * FROM transactions ORDER BY createdAt DESC').all() as any[];
-  return rows.map((row) => ({
-    id: row.id,
-    hash: row.hash || undefined,
-    status: row.status,
-    description: row.description,
-    contractId: row.contractId || undefined,
-    explorerUrl: row.explorerUrl || undefined,
-    amount: row.amount || undefined,
-    from: row.from_address || undefined,
-    createdAt: row.createdAt,
-  }));
+  if (db) {
+    try {
+      const rows = db.prepare('SELECT * FROM transactions ORDER BY createdAt DESC').all() as any[];
+      return rows.map((row) => ({
+        id: row.id,
+        hash: row.hash || undefined,
+        status: row.status,
+        description: row.description,
+        contractId: row.contractId || undefined,
+        explorerUrl: row.explorerUrl || undefined,
+        amount: row.amount || undefined,
+        from: row.from_address || undefined,
+        createdAt: row.createdAt,
+      }));
+    } catch {}
+  }
+  return readJSONFallback<TxRecord[]>('transactions.json', memoryStore.transactions);
 }
 
 export async function addTxRecord(record: TxRecord): Promise<TxRecord> {
   const db = getDb();
-  if (record.hash) {
-    const existing = db.prepare('SELECT id FROM transactions WHERE hash = ?').get(record.hash);
-    if (existing) return record;
+  if (db) {
+    try {
+      if (record.hash) {
+        const existing = db.prepare('SELECT id FROM transactions WHERE hash = ?').get(record.hash);
+        if (existing) return record;
+      }
+
+      const stmt = db.prepare(`
+        INSERT INTO transactions (id, hash, status, description, contractId, explorerUrl, amount, from_address, createdAt)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+
+      stmt.run(
+        record.id,
+        record.hash || null,
+        record.status,
+        record.description,
+        record.contractId || null,
+        record.explorerUrl || null,
+        record.amount || null,
+        record.from || null,
+        record.createdAt
+      );
+
+      return record;
+    } catch {}
   }
 
-  const stmt = db.prepare(`
-    INSERT INTO transactions (id, hash, status, description, contractId, explorerUrl, amount, from_address, createdAt)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `);
-
-  stmt.run(
-    record.id,
-    record.hash || null,
-    record.status,
-    record.description,
-    record.contractId || null,
-    record.explorerUrl || null,
-    record.amount || null,
-    record.from || null,
-    record.createdAt
-  );
-
+  const records = readJSONFallback<TxRecord[]>('transactions.json', memoryStore.transactions);
+  if (record.hash && records.some((r) => r.hash === record.hash)) {
+    return record;
+  }
+  const updated = [record, ...records];
+  memoryStore.transactions = updated;
+  writeJSONFallback('transactions.json', updated);
   return record;
 }
 
 export async function getTxByHash(hash: string): Promise<TxRecord | null> {
   const db = getDb();
-  const row = db.prepare('SELECT * FROM transactions WHERE hash = ?').get(hash) as any;
-  if (!row) return null;
-  return {
-    id: row.id,
-    hash: row.hash || undefined,
-    status: row.status,
-    description: row.description,
-    contractId: row.contractId || undefined,
-    explorerUrl: row.explorerUrl || undefined,
-    amount: row.amount || undefined,
-    from: row.from_address || undefined,
-    createdAt: row.createdAt,
-  };
+  if (db) {
+    try {
+      const row = db.prepare('SELECT * FROM transactions WHERE hash = ?').get(hash) as any;
+      if (row) {
+        return {
+          id: row.id,
+          hash: row.hash || undefined,
+          status: row.status,
+          description: row.description,
+          contractId: row.contractId || undefined,
+          explorerUrl: row.explorerUrl || undefined,
+          amount: row.amount || undefined,
+          from: row.from_address || undefined,
+          createdAt: row.createdAt,
+        };
+      }
+    } catch {}
+  }
+  const records = readJSONFallback<TxRecord[]>('transactions.json', memoryStore.transactions);
+  return records.find((r) => r.hash === hash) ?? null;
 }
 
 // ── License Records ──────────────────────────────────────────────────
@@ -202,79 +272,106 @@ export interface LicenseRecord {
 
 export async function getLicenseRecords(): Promise<LicenseRecord[]> {
   const db = getDb();
-  const rows = db.prepare('SELECT * FROM licenses ORDER BY createdAt DESC').all() as any[];
-  return rows.map((row) => ({
-    id: row.id,
-    title: row.title,
-    terms: row.terms || undefined,
-    status: row.status,
-    contractId: row.contractId,
-    ownerAddress: row.ownerAddress || undefined,
-    txHash: row.txHash || undefined,
-    amount: row.amount || undefined,
-    createdAt: row.createdAt,
-    updatedAt: row.updatedAt,
-  }));
+  if (db) {
+    try {
+      const rows = db.prepare('SELECT * FROM licenses ORDER BY createdAt DESC').all() as any[];
+      return rows.map((row) => ({
+        id: row.id,
+        title: row.title,
+        terms: row.terms || undefined,
+        status: row.status,
+        contractId: row.contractId,
+        ownerAddress: row.ownerAddress || undefined,
+        txHash: row.txHash || undefined,
+        amount: row.amount || undefined,
+        createdAt: row.createdAt,
+        updatedAt: row.updatedAt,
+      }));
+    } catch {}
+  }
+  return readJSONFallback<LicenseRecord[]>('licenses.json', memoryStore.licenses);
 }
 
 export async function addLicenseRecord(record: LicenseRecord): Promise<LicenseRecord> {
   const db = getDb();
-  const stmt = db.prepare(`
-    INSERT INTO licenses (id, title, terms, status, contractId, ownerAddress, txHash, amount, createdAt, updatedAt)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `);
+  if (db) {
+    try {
+      const stmt = db.prepare(`
+        INSERT INTO licenses (id, title, terms, status, contractId, ownerAddress, txHash, amount, createdAt, updatedAt)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `);
 
-  stmt.run(
-    record.id,
-    record.title,
-    record.terms || null,
-    record.status,
-    record.contractId,
-    record.ownerAddress || null,
-    record.txHash || null,
-    record.amount || null,
-    record.createdAt,
-    record.updatedAt
-  );
+      stmt.run(
+        record.id,
+        record.title,
+        record.terms || null,
+        record.status,
+        record.contractId,
+        record.ownerAddress || null,
+        record.txHash || null,
+        record.amount || null,
+        record.createdAt,
+        record.updatedAt
+      );
 
+      return record;
+    } catch {}
+  }
+
+  const records = readJSONFallback<LicenseRecord[]>('licenses.json', memoryStore.licenses);
+  const updated = [record, ...records];
+  memoryStore.licenses = updated;
+  writeJSONFallback('licenses.json', updated);
   return record;
 }
 
 export async function updateLicenseRecord(id: string, updates: Partial<LicenseRecord>): Promise<LicenseRecord | null> {
   const db = getDb();
-  const existing = db.prepare('SELECT * FROM licenses WHERE id = ?').get(id) as any;
-  if (!existing) return null;
+  if (db) {
+    try {
+      const existing = db.prepare('SELECT * FROM licenses WHERE id = ?').get(id) as any;
+      if (existing) {
+        const updated: LicenseRecord = {
+          id: existing.id,
+          title: updates.title ?? existing.title,
+          terms: updates.terms !== undefined ? updates.terms : existing.terms,
+          status: updates.status ?? existing.status,
+          contractId: updates.contractId ?? existing.contractId,
+          ownerAddress: updates.ownerAddress !== undefined ? updates.ownerAddress : existing.ownerAddress,
+          txHash: updates.txHash !== undefined ? updates.txHash : existing.txHash,
+          amount: updates.amount !== undefined ? updates.amount : existing.amount,
+          createdAt: existing.createdAt,
+          updatedAt: new Date().toISOString(),
+        };
 
-  const updated: LicenseRecord = {
-    id: existing.id,
-    title: updates.title ?? existing.title,
-    terms: updates.terms !== undefined ? updates.terms : existing.terms,
-    status: updates.status ?? existing.status,
-    contractId: updates.contractId ?? existing.contractId,
-    ownerAddress: updates.ownerAddress !== undefined ? updates.ownerAddress : existing.ownerAddress,
-    txHash: updates.txHash !== undefined ? updates.txHash : existing.txHash,
-    amount: updates.amount !== undefined ? updates.amount : existing.amount,
-    createdAt: existing.createdAt,
-    updatedAt: new Date().toISOString(),
-  };
+        const stmt = db.prepare(`
+          UPDATE licenses
+          SET title = ?, terms = ?, status = ?, contractId = ?, ownerAddress = ?, txHash = ?, amount = ?, updatedAt = ?
+          WHERE id = ?
+        `);
 
-  const stmt = db.prepare(`
-    UPDATE licenses
-    SET title = ?, terms = ?, status = ?, contractId = ?, ownerAddress = ?, txHash = ?, amount = ?, updatedAt = ?
-    WHERE id = ?
-  `);
+        stmt.run(
+          updated.title,
+          updated.terms || null,
+          updated.status,
+          updated.contractId,
+          updated.ownerAddress || null,
+          updated.txHash || null,
+          updated.amount || null,
+          updated.updatedAt,
+          id
+        );
 
-  stmt.run(
-    updated.title,
-    updated.terms || null,
-    updated.status,
-    updated.contractId,
-    updated.ownerAddress || null,
-    updated.txHash || null,
-    updated.amount || null,
-    updated.updatedAt,
-    id
-  );
+        return updated;
+      }
+    } catch {}
+  }
 
-  return updated;
+  const records = readJSONFallback<LicenseRecord[]>('licenses.json', memoryStore.licenses);
+  const idx = records.findIndex((r) => r.id === id);
+  if (idx === -1) return null;
+  records[idx] = { ...records[idx], ...updates, updatedAt: new Date().toISOString() };
+  memoryStore.licenses = records;
+  writeJSONFallback('licenses.json', records);
+  return records[idx];
 }
