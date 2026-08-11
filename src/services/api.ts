@@ -51,6 +51,18 @@ export interface HealthData {
   network: string;
 }
 
+export interface ContractConfig {
+  network: string;
+  horizonUrl: string;
+  registryContractId: string;
+  routerContractId: string;
+  explorerBase: string;
+  mode: 'live' | 'preview';
+  isConfigured: boolean;
+}
+
+// ── Core fetch helper ────────────────────────────────────────────────────────
+
 async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(path, {
     ...init,
@@ -63,16 +75,27 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   return res.json() as Promise<T>;
 }
 
-// ── Health ─────────────────────────────────────────────────────────────
+// ── Health ────────────────────────────────────────────────────────────────────
 
 export function apiHealth() {
   return apiFetch<HealthData>('/api/health');
 }
 
-// ── Transactions ───────────────────────────────────────────────────────
+// ── Transactions ──────────────────────────────────────────────────────────────
 
-export function apiGetTransactions() {
-  return apiFetch<{ transactions: ApiTransaction[]; total: number }>('/api/transactions');
+export function apiGetTransactions(params?: {
+  status?: ApiTransaction['status'];
+  limit?: number;
+  offset?: number;
+}) {
+  const qs = new URLSearchParams();
+  if (params?.status) qs.set('status', params.status);
+  if (params?.limit !== undefined) qs.set('limit', String(params.limit));
+  if (params?.offset !== undefined) qs.set('offset', String(params.offset));
+  const query = qs.toString() ? `?${qs}` : '';
+  return apiFetch<{ transactions: ApiTransaction[]; total: number; limit: number; offset: number }>(
+    `/api/transactions${query}`,
+  );
 }
 
 export function apiGetTransaction(hash: string) {
@@ -86,10 +109,15 @@ export function apiRecordTransaction(data: Omit<ApiTransaction, 'createdAt'>) {
   });
 }
 
-// ── Licenses ───────────────────────────────────────────────────────────
+// ── Licenses ──────────────────────────────────────────────────────────────────
 
 export function apiGetLicenses() {
   return apiFetch<{ licenses: ApiLicense[]; total: number }>('/api/licenses');
+}
+
+/** Fetch a single license by ID. */
+export function apiGetLicense(id: string) {
+  return apiFetch<{ license: ApiLicense }>(`/api/licenses/${id}`);
 }
 
 export function apiCreateLicense(data: {
@@ -112,21 +140,14 @@ export function apiUpdateLicense(id: string, updates: Partial<ApiLicense>) {
   });
 }
 
-// ── Analytics ──────────────────────────────────────────────────────────
+// ── Analytics ─────────────────────────────────────────────────────────────────
 
 export function apiGetAnalytics() {
   return apiFetch<AnalyticsData>('/api/analytics');
 }
 
-// ── Contract Config ────────────────────────────────────────────────────
+// ── Contract Config ───────────────────────────────────────────────────────────
 
 export function apiGetContractConfig() {
-  return apiFetch<{
-    network: string;
-    horizonUrl: string;
-    registryContractId: string;
-    routerContractId: string;
-    explorerBase: string;
-    mode: string;
-  }>('/api/contracts/config');
+  return apiFetch<ContractConfig>('/api/contracts/config');
 }
