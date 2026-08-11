@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useWalletStore } from '@/store/wallet';
 import { WalletModal } from '@/components/wallet/WalletModal';
+import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 
 const nav = [
   { href: '/dashboard',     label: 'Dashboard' },
@@ -19,6 +20,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [walletModalOpen, setWalletModalOpen] = useState(false);
   const { connected, address, disconnect, network, setNetwork, status, connect } = useWalletStore();
+  const { copy, copied } = useCopyToClipboard();
 
   const handleConnectWallet = async (walletType: string) => {
     try {
@@ -95,7 +97,13 @@ export function Shell({ children }: { children: React.ReactNode }) {
               {connected ? (
                 <div className="flex items-center gap-2 rounded-full border border-[#ef233c]/30 bg-[#ef233c]/10 px-4 py-2">
                   <span className="h-1.5 w-1.5 rounded-full bg-[#ef233c] animate-pulse" />
-                  <span className="text-xs font-bold text-white font-manrope">{address?.slice(0, 8)}…</span>
+                  <button
+                    onClick={() => address && copy(address)}
+                    title={copied ? 'Copied!' : 'Copy address'}
+                    className="text-xs font-bold text-white font-manrope hover:text-red-300 transition-colors"
+                  >
+                    {copied ? '✓ Copied' : `${address?.slice(0, 8)}…`}
+                  </button>
                   <button
                     onClick={disconnect}
                     className="ml-1 rounded-full border border-white/10 bg-black/40 px-2 py-0.5 text-[10px] text-zinc-300 hover:text-white transition-colors"
