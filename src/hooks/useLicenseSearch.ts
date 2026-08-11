@@ -1,10 +1,13 @@
 import { useMemo, useState } from 'react';
 import type { ApiLicense } from '@/services/api';
+import { useDebounce } from './useDebounce';
 
 type LicenseStatusFilter = 'all' | 'draft' | 'active' | 'revoked';
 
 interface UseLicenseSearchOptions {
   licenses: ApiLicense[];
+  /** Debounce delay for text query in ms (default: 250). */
+  debounceMs?: number;
 }
 
 interface UseLicenseSearchResult {
@@ -17,16 +20,21 @@ interface UseLicenseSearchResult {
 }
 
 /**
- * Client-side hook that provides text search and status filtering
- * over a list of ApiLicense objects. The filtering is applied with
- * useMemo so it re-runs only when the source data or filter values change.
+ * Client-side hook that provides debounced text search and status filtering
+ * over a list of ApiLicense objects. The filtering is applied with useMemo so
+ * it re-runs only when the debounced query, status filter, or source data change.
  */
-export function useLicenseSearch({ licenses }: UseLicenseSearchOptions): UseLicenseSearchResult {
+export function useLicenseSearch({
+  licenses,
+  debounceMs = 250,
+}: UseLicenseSearchOptions): UseLicenseSearchResult {
   const [query, setQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<LicenseStatusFilter>('all');
 
+  const debouncedQuery = useDebounce(query, debounceMs);
+
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
+    const q = debouncedQuery.trim().toLowerCase();
     return licenses.filter((lic) => {
       const matchesQuery =
         !q ||
@@ -38,7 +46,7 @@ export function useLicenseSearch({ licenses }: UseLicenseSearchOptions): UseLice
 
       return matchesQuery && matchesStatus;
     });
-  }, [licenses, query, statusFilter]);
+  }, [licenses, debouncedQuery, statusFilter]);
 
   return {
     query,
