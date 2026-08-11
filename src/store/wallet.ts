@@ -97,4 +97,4 @@ export const useWalletStore = create<WalletState>()(
     }),
     { name: 'wallet-store', partialize: (state) => ({ address: state.address, walletType: state.walletType, network: state.network }) },
   ),
-);;
+);
