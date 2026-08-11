@@ -6,7 +6,11 @@ import { apiGetLicenses, apiCreateLicense, ApiLicense } from '@/services/api';
 import { useWalletStore } from '@/store/wallet';
 import { Skeleton, TableRowSkeleton } from '@/components/ui/skeleton';
 import { ErrorCard } from '@/components/ui/error-card';
+import { Badge, licenseStatusVariant } from '@/components/ui/badge';
+import { useLicenseSearch } from '@/hooks/useLicenseSearch';
 import { toast } from 'sonner';
+
+const STATUS_OPTIONS = ['all', 'draft', 'active', 'revoked'] as const;
 
 export default function LicensesPage() {
   const { address } = useWalletStore();
@@ -18,6 +22,11 @@ export default function LicensesPage() {
   const [terms, setTerms] = useState('');
   const [fee, setFee] = useState('10');
   const [submitting, setSubmitting] = useState(false);
+
+  // ── Search / Filter ─────────────────────────────────────────────────
+  const { query, setQuery, statusFilter, setStatusFilter, filtered, total } = useLicenseSearch({
+    licenses,
+  });
 
   const fetchLicenses = async () => {
     try {
@@ -115,6 +124,7 @@ export default function LicensesPage() {
                 <input
                   type="number"
                   step="0.0001"
+                  min="0.0001"
                   value={fee}
                   onChange={(e) => setFee(e.target.value)}
                   className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-zinc-500 focus:border-[#ef233c] focus:outline-none transition-colors"
@@ -123,7 +133,7 @@ export default function LicensesPage() {
 
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1">
-                  Terms & Conditions
+                  Terms &amp; Conditions
                 </label>
                 <textarea
                   rows={3}
@@ -146,7 +156,42 @@ export default function LicensesPage() {
 
           {/* Licenses List */}
           <div className="space-y-4">
-            <h2 className="text-xl font-bold text-white font-manrope">Registered Licenses</h2>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+              <h2 className="text-xl font-bold text-white font-manrope flex-1">
+                Registered Licenses
+                {!loading && (
+                  <span className="ml-2 text-sm font-normal text-zinc-500">
+                    ({total} of {licenses.length})
+                  </span>
+                )}
+              </h2>
+            </div>
+
+            {/* Search + Status filter bar */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              <input
+                type="search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search by title, terms, or contract…"
+                className="flex-1 rounded-2xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm text-white placeholder-zinc-500 focus:border-[#ef233c] focus:outline-none transition-colors"
+              />
+              <div className="flex items-center gap-1 rounded-2xl border border-white/10 bg-black/40 p-1">
+                {STATUS_OPTIONS.map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => setStatusFilter(s as typeof statusFilter)}
+                    className={`rounded-xl px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider transition-all ${
+                      statusFilter === s
+                        ? 'bg-[#ef233c] text-white'
+                        : 'text-zinc-500 hover:text-white'
+                    }`}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
 
             {loading ? (
               <div className="space-y-3">
@@ -156,23 +201,25 @@ export default function LicensesPage() {
               </div>
             ) : error ? (
               <ErrorCard message={error} retry={fetchLicenses} />
-            ) : licenses.length === 0 ? (
+            ) : filtered.length === 0 ? (
               <div className="rounded-[28px] border border-dashed border-white/10 p-8 text-center text-sm text-zinc-500">
-                No licenses registered yet. Create your first license draft above.
+                {licenses.length === 0
+                  ? 'No licenses registered yet. Create your first license draft above.'
+                  : 'No licenses match your search or filter.'}
               </div>
             ) : (
-              licenses.map((lic) => (
+              filtered.map((lic) => (
                 <div
                   key={lic.id}
                   className="rounded-[24px] border border-white/10 bg-zinc-900/50 p-5 shadow-sm transition hover:border-white/20"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <span className="font-bold text-white font-manrope">{lic.title}</span>
-                        <span className="rounded-full bg-[#ef233c]/10 px-2.5 py-0.5 text-[10px] font-bold text-red-400 border border-[#ef233c]/20 uppercase tracking-wider">
+                        <Badge variant={licenseStatusVariant(lic.status)} dot>
                           {lic.status}
-                        </span>
+                        </Badge>
                       </div>
                       <p className="mt-1 text-xs text-zinc-400 line-clamp-2">
                         {lic.terms || 'Standard licensing terms apply.'}
@@ -180,7 +227,7 @@ export default function LicensesPage() {
                     </div>
 
                     {lic.amount && (
-                      <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-bold text-zinc-200 font-mono">
+                      <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-bold text-zinc-200 font-mono shrink-0">
                         {lic.amount} XLM
                       </span>
                     )}
