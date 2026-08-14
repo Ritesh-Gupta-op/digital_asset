@@ -134,7 +134,7 @@ User → Next.js Frontend → Stellar Wallets Kit
 git clone https://github.com/Ritesh-Gupta-op/digital_asset.git
 cd digital_asset
 npm install
-cp .env.example .env.local
+cp .env.example .env.local  
 npm run dev
 ```
 
