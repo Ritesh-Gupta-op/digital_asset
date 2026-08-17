@@ -1,20 +1,10 @@
-# LicenseCraft – Soroban Level 4 Platform
+# LicenseCraft 
 
 Your one-click digital asset license generator for NFTs, smart contracts, and tokens on Stellar.
 
 ## 🏆 Stellar Level 4 Production-Ready MVP Compliance
 
-| Level 4 Criterion | Implementation & Verification | Status |
-| --- | --- | --- |
-| **Fully Functional Production MVP** | Next.js 15, TypeScript, Tailwind CSS, Zustand, React Query | ✅ Production-Ready |
-| **Smart Contracts on Stellar Testnet** | `LicenseRegistry` (`CDBHJ72...`) & `RoyaltyRouter` (`CDKY4A...`) | ✅ Deployed & Verified |
-| **Mobile Responsive UI** | Mobile-first responsive navigation, touch target optimization, light/dark themes | ✅ Fully Responsive |
-| **Loading States & Error Handling** | Sonner toast notifications, error boundaries, state transition indicators | ✅ Production Standard |
-| **User Onboarding (10+ Real Users)** | 10 real testnet onboardings with survey feedback, ratings, and transaction IDs | ✅ Onboarded & Documented |
-| **Proof of Wallet Interactions** | Stellar Wallets Kit (Freighter, Lobstr, Albedo, Ledger) with 10+ interaction types | ✅ Verified On-Chain |
-| **Analytics & Monitoring Integration** | Live Analytics Dashboard, transaction activity feed, monitoring setup | ✅ Fully Integrated |
-| **Technical Standards (15+ Commits)** | **21+ meaningful commits** on public GitHub repo | ✅ Exceeds Standard |
-| **CI/CD Automation & Testing** | 3 GitHub Actions workflows (`rust-test`, `pr-checks`, `deploy`) + 11 passing tests | ✅ Automated Pipeline |
+
 
 ## Submission Checklist & Comprehensive Requirements
 
@@ -23,7 +13,7 @@ Your one-click digital asset license generator for NFTs, smart contracts, and to
 | **Public GitHub Repository** | ✅ Passed | [Ritesh-Gupta-op/digital_asset](https://github.com/Ritesh-Gupta-op/digital_asset) |
 | **Minimum 20+ Meaningful Commits** | ✅ Passed | **21+ commits** ([View Commit History](https://github.com/Ritesh-Gupta-op/digital_asset/commits/main)) |
 | **Live Deployed Application** | ✅ Passed | [Vercel Deployment Demo](https://digital-asset-xrme.vercel.app/) |
-| **PPT/Pitch Deck Link** | ✅ Passed | [View Pitch Deck (PPT)](https://docs.google.com/presentation/d/placeholder/edit) |
+| **PPT/Pitch Deck Link** | ✅ Passed | [View Pitch Deck (PPT)](https://gamma.app/docs/One-Click-Digital-Asset-Licensing-on-Stellar-Soroban-cdd2am4roort0yc) |
 | **Demo Video Link** | ✅ Passed | [YouTube Demo Video](https://youtu.be/nJBHV42PgOs) |
 | **Proof of 50+ Users** | ✅ Passed | [View User Analytics Proof](#user-analytics--proof-of-50-users) |
 | **Screenshots of Analytics/Transactions** | ✅ Passed | [View Analytics & Transaction Screenshots](#analytics--transaction-monitoring) |
@@ -45,7 +35,7 @@ Your one-click digital asset license generator for NFTs, smart contracts, and to
 - **Deployment Tx Hash**: [`e9505eb7cca9...`](https://stellar.expert/explorer/testnet/tx/e9505eb7cca987e911fc372c3409ab79245243b78d89453dda789a7d585fd791)
 
 
-
+## PPT/Pitch Deck Link  : [View Pitch Deck (PPT)](https://gamma.app/docs/One-Click-Digital-Asset-Licensing-on-Stellar-Soroban-cdd2am4roort0yc) |
 
 
 ## Product Overview
