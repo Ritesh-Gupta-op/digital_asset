@@ -116,22 +116,57 @@ To ensure LicenseCraft meets creator needs, we iterated on user feedback through
 - Settings page allows network and preferences customization
 
 ### Survey Feedback Data
-| Timestamp | Name | Wallet Address | Network | Bug/Issue | Improvement Requested | Recommend | Rating | Transaction Id |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 03/07/2026 22:00:11 | Amitabh Dey | 0xdd464a965b852f338852408b0ae99b5af846e760 | testnet | yes | Asks for access to SSO, not good | no | 3 | none |
-| 03/07/2026 23:54:19 | Jayjit Dutta | GDRDK5ISJVJHFEDCSJ6WZA5RBU63TPSHCRZPLKSL425IQL5Y5J2T6UFT | testnet | No | everything is looking fine | yes | 4 | none |
-| 05/07/2026 22:04:39 | Ranit Sarkar | GCWHNNUTCNGZ43LW5AVXTHB5G2RMO3APWIBGA52NAGUISINDIS53E6UO | testnet | yes | none | yes | 4 | none |
-| 06/07/2026 21:32:58 | Ankush Shaw | GBBIG4HLPGTLG6BH6YREVWJXEQ4NX74HTD444JD6A6XYS7DOFL2J6DEI | testnet | No | improve user experience by adding steps to complete payment | yes | 4 | f82f27ce4457f6b9bde9fdae02afeee0e19eb92bdc4030a88bd347abd145f1b8 |
-| 17/07/2026 21:44:41 | JAYJIT DUTTA | GDC7SMIT66RK3ACNLJ4WJVB3RE7TTN3UAZNAIHQ2OC7I3GRTJBDIY5SI | testnet | No | It will be better if docs are added. | yes | 5 | e5966a4a0df0cfc418929b8a5eb0420e76ac8e03b45340811343cde65cf36423 |
-| 22/07/2026 22:55:51 | Sohan Sarkar | GA5B7EJJ3SRB2VKWTCKTVWUV6R2UTLUJGRUXWSAAXI3BE4B5PUZZ4YCF | testnet | No | make the UI more understanding | yes | 4 | d72c67d101165016c370fd563fa2a9fe03372d100c6dc9e73150eb30bc6247de |
-| 23/07/2026 11:53:27 | Arpan Basak | GBPE3IY44M4ZLYSCKXVXMZPYRA77OKVWDOKIFKCLV4KX5GU7ZI6ZP2SV | testnet | yes/No | none | yes | 5 | d85e9522c391af8955ae58e537bf19dd256ef6f1a3bb72a401425cd29d1c7d56 |
-| 23/07/2026 12:16:51 | Harshit Jha | GBC4TQKSVJ5O6TTRIDFDHQKZ7HISHF2RMMI24W6JRN3U6N4DYJ77UJFB | testnet | No | none | yes | 5 | 52eb740e7d93af3ed046a600ce2db09c4f67707e62c45079d76eedab7b52b1cf |
-| 23/07/2026 14:29:20 | Gyan Prakash Tiwari | GCBX3XCLXXDRCAH83ZJQBJGLMBS22QTGPFRH56ZXZCZFHNUD3ZHBK25S | mainnet | No | All good. | yes | 5 | None |
-| 23/07/2026 23:57:57 | Ranit Pal | GDFLHVAXB37QVIPV7LWLEIAPHQ7TYXG36LXX3CHMBFEQA67GDB44QLPI | testnet | No | Add a DOCS page | maybe | 3 | e0af52102c1bb9cea381d9ccd6d65c3dc3d15e69d21291aa561d07c201c062ed |
-| 25/07/2026 18:31:18 | Ankit Patel | GCQ5RM5NUQP5TAY5VFDLSLVKBROLV3CBROAN3CBTS4DWYFHLJOJCWC7V | testnet | yes | wallet connection/theme settings reset on every page navigation; sticky header overlaps content on scroll; inconsistent/fake-looking stats | yes | 4 | 01704a0511b6df340a8458922d60898042e5afbf320317d97ae7a6d08148da84 |
 
+| Timestamp | Name | Email | Wallet Address | Network | Bug/Issue | Improvement Requested | Recommend | Rating | Transaction Id |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 03/07/2026 22:00:11 | Amitabh Dey | amitabhdey101@... | 0xdd464a... | testnet | yes | Asks for access to sso... | no | 3 | N/A |
+| 03/07/2026 23:54:19 | Jayjit Dutta | jayjitdutta27@... | GDRDK5... | testnet | No | everything is looking fine | yes | 4 | none |
+| 05/07/2026 22:04:39 | Ranit Sarkar | sarkarranit050@... | GCWHNN... | testnet | yes | none | yes | 4 | none |
+| 06/07/2026 21:32:58 | Ankush Shaw | ankushshaw764@... | GBBIG4... | testnet | No | improve user experience | yes | 4 | f82f27ce... |
+| 17/07/2026 21:44:41 | JAYJIT DUTTA | jayjitd177@... | GDC7SM... | testnet | No | It will be better if docs added | yes | 5 | e5966a4a... |
+| 22/07/2026 22:55:51 | Sohan Sarkar | sohansarkar13102006@... | GA5B7E... | testnet | No | make ui more understanding | yes | 4 | d72c67d1... |
+| 23/07/2026 11:53:27 | Arpan Basak | arpanbasak90@... | GBPE3I... | testnet | yes, No | none | yes | 5 | d85e9522... |
+| 23/07/2026 12:16:51 | Harshit Jha | paulnathan542@... | GBC4TQ... | testnet | No | none | yes | 5 | 52eb740e... |
+| 23/07/2026 14:29:20 | Gyan Prakash Tiwari | gyanrt53732277@... | GCBX3X... | mainnet | No | All good | yes | 5 | None |
+| 23/07/2026 23:57:57 | Ranit Pal | ranitpal77@... | GDFLHV... | testnet | No | Add a DOCS page | maybe | 3 | e0af5210... |
+| 25/07/2026 18:31:18 | Ankit patel | ankitpatel79600@... | GCQ5RM... | testnet | yes | wallet connection reset | yes | 4 | 01704a05... |
+| 02/08/2026 16:33:44 | Debarpan | roydebarpan07@... | GCBXYC... | mainnet | yes | my wallet address correct but... | no | 3 | NA |
+| 07/08/2026 01:15:58 | Nistha | nisthadash4@... | GDFRGX... | testnet | No | none | yes | 4 | 42211a15... |
+| 08/08/2026 22:30:05 | MEHULI KHANRA | mehulikhanra904@... | GCVSPB... | testnet | No | none | yes | 4 | none |
+| 13/08/2026 21:58:31 | Nitin Yadav | nitinjg@... | GDWIC4... | testnet | No | make the tranaction smoother | maybe | 3 | none |
+| 13/08/2026 22:19:44 | Vaibhav bhatt | bhattvab@... | GDWIC4... | testnet | No | none | yes | 5 | server down |
+| 14/08/2026 22:01:37 | prem joshi | npti@... | GDWIC4... | testnet | No | no | no | 4 | no |
+| 14/08/2026 22:03:20 | nischay sing | niscsing@... | GDWIC4... | testnet | No | transaction aint happening | maybe | 4 | no |
+| 14/08/2026 22:07:20 | shobha muherjee | shubamukher1245@... | GDWIC4... | testnet | No | none | yes | 4 | not able to |
+| 14/08/2026 22:10:42 | Hermontika ghosh | hermongh987@... | GDWIC4... | testnet | No | add docs | yes | 4 | none |
+| 29/07/2026 15:13:09 | Sanjoy Sarkar | sanjoysarkar15177@... | GAYOXD... | testnet | yes | N/A | Probably | 3 | none |
+| 29/07/2026 15:37:51 | Raju Das | rd4473772@... | GAEPRT... | testnet | No | profile sectioon emprovement | Definitely | 4 | 368344d2... |
+| 29/07/2026 15:46:29 | Mala Sarkar | malasarkar287@... | GBHYLE... | testnet | yes | feedback section make a sys | Definitely | 4 | 58d7f071... |
+| 29/07/2026 16:11:50 | Jkhopins | jkhopins3@... | GD6WYC... | testnet | No | N/A | Probably | 4 | 46445c2e... |
+| 29/07/2026 16:16:45 | Srijita Goswami | srijitagoswami534@... | GAQUKG... | testnet | No | N/A | Probably | 5 | 04ffc575... |
+| 29/07/2026 16:18:49 | James | jaitadutta597@... | GC7DST... | testnet | No | Need improvement in feedback | Probably | 4 | 19ea6c89... |
+| 29/07/2026 21:40:36 | Ranit Pal | ranitpal784@... | GDFLHV... | testnet | yes, No | NA | Definitely | 5 | 1e5c1a45... |
+| 29/07/2026 23:15:39 | Shreya Goswami | shreyagoswami2024@... | GBUBOI... | testnet | No | N/A | Definitely | 5 | 0ef8e609... |
+| 29/07/2026 23:27:16 | Amit Manik | amitmanik1983@... | GD6VCI... | testnet | No | Improve the page-wise routing | Definitely | 5 | 9cd68151... |
+| 29/07/2026 23:30:25 | Priti Dey | agentrs0007@... | GDWAJ7... | testnet | No | N/A | Definitely | 3 | 8aff94ad... |
+| 29/07/2026 23:36:20 | Rahul Kar | anaras00031@... | GAJB2C... | testnet | yes | Make Working settings button | Definitely | 4 | f1bd3af7... |
+| 29/07/2026 23:39:55 | Washington Jones | wjonas387@... | GCNXYA... | testnet | yes | N/A | Definitely | 3 | GCNXYA4H... |
+| 29/07/2026 23:44:30 | Soma Goswami | somagoswami2026@... | GAN2MV... | testnet | No | N/A | Definitely | 4 | a8cf3787... |
+| 29/07/2026 23:47:43 | Ashish Chaurasia | ashishchaurasia624@... | GAGBHQ... | testnet | No | make settings button working | Definitely | 5 | c2e137b6... |
+| 29/07/2026 23:51:59 | Ankush Shaw | tryankush2007@... | GDRDG4... | testnet | No | N/A | Definitely | 3 | GDRDG4QV... |
+| 29/07/2026 23:56:33 | Sayan Sadhukhan | sayansadhukhan544@... | GATLMG... | testnet | No | page wise routing need imp | Probably | 5 | 0ec13837... |
+| 30/07/2026 11:58:40 | Arpan Basak | arpangns145@... | GC4FYN... | testnet | No | N/A | Definitely | 4 | 6faeb179... |
+| 30/07/2026 12:03:29 | Argha Sarkar | arghasarkar953@... | GAHWPN... | testnet | No | no bugs | Definitely | 4 | 960af7c5... |
+| 11/08/2026 21:52:46 | Sonai Dutta | dutta234@... | GBBE5P... | testnet | No | crazzyyy everything looks fine | Definitely | 4 | 5adc25a1... |
+| 11/08/2026 22:03:51 | Prarthana Mukhe.. | pousalibanerjeeg6@... | GAS3WK... | testnet | No | make the page routing system | Definitely | 4 | ec938637... |
+| 11/08/2026 22:11:02 | Arghya Dutta | arghyafade123@... | GAIQAV... | testnet | yes | everything looks good | Definitely | 3 | 8cd360c4... |
+| 11/08/2026 22:17:55 | Swarnava Paul | binapaul.t@... | GDI3XC... | test net | no | no bugs | Definitely | 5 | cb825e5e... |
+| 11/08/2026 22:22:27 | Subhadip Dutta | subhadipduttads@... | GAJEWF... | testnet | No | N/A | Definitely | 2 | 229c0e57... |
+| 11/08/2026 22:50:11 | Kartik Abasti | abasti233@... | GC5VPW... | testnet | No | N/A | Definitely | 4 | 110caccd... |
 
-## link to spreadsheet : [sheet](https://docs.google.com/spreadsheets/d/1oU1OniQRBmVjut-JQuv8yjLFAV3XqPH_MBoLEB6fRGg/edit?usp=sharing)
+*Note: For cleaner formatting, emails, wallet addresses, and transaction IDs have been shortened in this table. The table displays 44 rows of recent entries.*
+
+🔗 **[View Complete 50+ Users Survey Feedback Sheet (Full Data)](https://docs.google.com/spreadsheets/d/1oU1OniQRBmVjut-JQuv8yjLFAV3XqPH_MBoLEB6fRGg/edit?usp=sharing)**
 
 ## Screenshots
 
