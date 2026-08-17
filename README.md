@@ -26,7 +26,7 @@ Your one-click digital asset license generator for NFTs, smart contracts, and to
 
 ## Quick Links
 - **Live Demo**: [Vercel Deployment](https://digital-asset-xrme.vercel.app/)
-- **Pitch Deck (PPT)**: [Google Slides / PPT](https://docs.google.com/presentation/d/placeholder/edit)
+- **Pitch Deck (PPT)**: [Google Slides / PPT](https://gamma.app/docs/One-Click-Digital-Asset-Licensing-on-Stellar-Soroban-cdd2am4roort0yc)
 - **Demo Video**: [YouTube Video](https://youtu.be/nwuml1r_lx4)
 - **GitHub Repository**: [Ritesh-Gupta-op/digital_asset](https://github.com/Ritesh-Gupta-op/digital_asset)
 - **License Registry Contract**: [`CDBHJ72ROMTW...`](https://stellar.expert/explorer/testnet/contract/CDBHJ72ROMTWZC6OIL6TDCUFH6VJOB4CSODT5H6S6DJCQQAJQHBHY6R7)
