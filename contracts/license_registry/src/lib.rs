@@ -2,15 +2,21 @@
 #![allow(clippy::needless_pass_by_value)]
 
 use soroban_sdk::{
-    contract, contracterror, contractimpl, contracttype, panic_with_error, Address, BytesN, Env, Symbol, Vec,
+    contract, contracterror, contractimpl, contracttype, panic_with_error, Address, BytesN, Env, Symbol,
 };
+
+#[contracttype]
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+pub enum LicenseState {
+    Draft = 1,
+    Active = 2,
+}
 
 #[contracttype]
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum DataKey {
     Admin,
     Owner,
-    LicenseCounter,
     License(u128),
 }
 
@@ -32,7 +38,7 @@ pub struct LicenseRecord {
     pub creator: Address,
     pub licensee: Address,
     pub terms_hash: BytesN<32>,
-    pub state: Symbol,
+    pub state: LicenseState,
     pub royalty_bps: u32,
 }
 
@@ -44,46 +50,46 @@ impl LicenseRegistry {
     pub fn init(env: Env, admin: Address) {
         env.storage().instance().set(&DataKey::Admin, &admin);
         env.storage().instance().set(&DataKey::Owner, &admin);
-        env.storage().instance().set(&DataKey::LicenseCounter, &0u128);
     }
 
     pub fn init_license(
         env: Env,
+        id: u128,
         creator: Address,
         licensee: Address,
         terms_hash: BytesN<32>,
         royalty_bps: u32,
-    ) -> u128 {
+    ) {
         creator.require_auth();
         if royalty_bps > 10000 {
             panic_with_error!(&env, Error::InvalidInput);
         }
+        if env.storage().persistent().has(&DataKey::License(id)) {
+            panic_with_error!(&env, Error::AlreadyExists);
+        }
 
-        let counter: u128 = env.storage().instance().get(&DataKey::LicenseCounter).unwrap_or(0);
-        let id = counter + 1;
         let record = LicenseRecord {
             id,
             creator: creator.clone(),
             licensee: licensee.clone(),
             terms_hash: terms_hash.clone(),
-            state: Symbol::new(&env, "draft"),
+            state: LicenseState::Draft,
             royalty_bps,
         };
         env.storage().persistent().set(&DataKey::License(id), &record);
-        env.storage().instance().set(&DataKey::LicenseCounter, &id);
 
         env.events().publish((Symbol::new(&env, "license_created"), id), (creator, licensee, terms_hash, royalty_bps));
-        id
     }
 
     pub fn activate_license(env: Env, id: u128) {
-        let admin: Address = env.storage().instance().get(&DataKey::Admin).unwrap();
-        admin.require_auth();
         let mut record: LicenseRecord = env.storage().persistent().get(&DataKey::License(id)).unwrap_or_else(|| panic_with_error!(&env, Error::NotFound));
-        if record.state != Symbol::new(&env, "draft") {
+        
+        record.creator.require_auth();
+
+        if record.state != LicenseState::Draft {
             panic_with_error!(&env, Error::InvalidState);
         }
-        record.state = Symbol::new(&env, "active");
+        record.state = LicenseState::Active;
         env.storage().persistent().set(&DataKey::License(id), &record);
         env.events().publish((Symbol::new(&env, "license_activated"), id), record.creator);
     }
@@ -115,6 +121,7 @@ mod test {
     #[test]
     fn creates_and_reads_license() {
         let env = Env::default();
+        env.mock_all_auths();
         let admin = Address::generate(&env);
         let creator = Address::generate(&env);
         let licensee = Address::generate(&env);
@@ -122,15 +129,17 @@ mod test {
         contract.init(&admin);
 
         let terms_hash = BytesN::from_array(&env, &[1u8; 32]);
-        let id = contract.init_license(&creator, &licensee, &terms_hash, &2000);
+        let id = 12345;
+        contract.init_license(&id, &creator, &licensee, &terms_hash, &2000);
         let record = contract.get_license(&id);
-        assert_eq!(record.state, Symbol::new(&env, "draft"));
+        assert_eq!(record.state, LicenseState::Draft);
         assert_eq!(record.royalty_bps, 2000);
     }
 
     #[test]
     fn activates_license() {
         let env = Env::default();
+        env.mock_all_auths();
         let admin = Address::generate(&env);
         let creator = Address::generate(&env);
         let licensee = Address::generate(&env);
@@ -138,15 +147,17 @@ mod test {
         contract.init(&admin);
 
         let terms_hash = BytesN::from_array(&env, &[2u8; 32]);
-        let id = contract.init_license(&creator, &licensee, &terms_hash, &1500);
+        let id = 67890;
+        contract.init_license(&id, &creator, &licensee, &terms_hash, &1500);
         contract.activate_license(&id);
         let record = contract.get_license(&id);
-        assert_eq!(record.state, Symbol::new(&env, "active"));
+        assert_eq!(record.state, LicenseState::Active);
     }
 
     #[test]
     fn rejects_invalid_royalty() {
         let env = Env::default();
+        env.mock_all_auths();
         let admin = Address::generate(&env);
         let creator = Address::generate(&env);
         let licensee = Address::generate(&env);
@@ -154,10 +165,10 @@ mod test {
         contract.init(&admin);
 
         let terms_hash = BytesN::from_array(&env, &[3u8; 32]);
+        let id = 999;
         let result = std::panic::catch_unwind(|| {
-            contract.init_license(&creator, &licensee, &terms_hash, &10001);
+            contract.init_license(&id, &creator, &licensee, &terms_hash, &10001);
         });
         assert!(result.is_err());
     }
 }
-
