@@ -12,7 +12,6 @@ pub enum DataKey {
     Owner,
     LicenseCounter,
     License(u128),
-    CreatorLicenses(Address),
 }
 
 #[contracterror]
@@ -71,9 +70,6 @@ impl LicenseRegistry {
             royalty_bps,
         };
         env.storage().persistent().set(&DataKey::License(id), &record);
-        let mut licenses = env.storage().persistent().get(&DataKey::CreatorLicenses(creator.clone())).unwrap_or(Vec::new(&env));
-        licenses.push_back(record.clone());
-        env.storage().persistent().set(&DataKey::CreatorLicenses(creator.clone()), &licenses);
         env.storage().instance().set(&DataKey::LicenseCounter, &id);
 
         env.events().publish((Symbol::new(&env, "license_created"), id), (creator, licensee, terms_hash, royalty_bps));
@@ -94,10 +90,6 @@ impl LicenseRegistry {
 
     pub fn get_license(env: Env, id: u128) -> LicenseRecord {
         env.storage().persistent().get(&DataKey::License(id)).unwrap_or_else(|| panic_with_error!(&env, Error::NotFound))
-    }
-
-    pub fn get_creator_licenses(env: Env, creator: Address) -> Vec<LicenseRecord> {
-        env.storage().persistent().get(&DataKey::CreatorLicenses(creator)).unwrap_or(Vec::new(&env))
     }
 
     pub fn transfer_ownership(env: Env, new_owner: Address) {
